@@ -1,6 +1,6 @@
 <script setup>
 
-import {ref, watch} from "vue";
+import {onMounted, ref, watch} from "vue";
 
 const props = defineProps({
   url: {
@@ -10,16 +10,18 @@ const props = defineProps({
 
 const error = ref(false);
 
-watch(() => props.url, (newUrl) => {
-  if (!props.url) error.value = true;
-})
+onMounted(() => {
+  if (!props.url.value) {
+    error.value = true;
+  }
+});
 
 </script>
 
 <template>
   <q-avatar color="accent" rounded>
-    <q-icon name="music_note" color="secondary" v-if="error" />
-    <q-img @load="error = false" @error="error = true" v-else>
+    <q-icon name="music_note" v-if="error" />
+    <q-img :src="url" @load="error = false" @error="error = true" v-else>
       <template #loading>
         <q-spinner size="md" color="primary" />
       </template>

@@ -8,7 +8,7 @@ import {
 import App from './App.vue';
 
 // Import Spotify services
-import './services/spotify_api.js';
+import './services/spotify_service.js';
 
 // Import icon libraries
 import '@quasar/extras/material-icons/material-icons.css';

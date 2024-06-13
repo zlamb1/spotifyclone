@@ -1,5 +1,5 @@
 import player from '../services/spotify_service.js'
 
-function useSpotifyPlayer() {
+export function useSpotifyPlayer() {
     return player;
 }
