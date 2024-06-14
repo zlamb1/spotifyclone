@@ -5,12 +5,17 @@ import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-      vue({
-        transformAssetUrls
-      }),
-      quasar({
-        sassVariables: 'src/quasar-variables.sass'
-      })
-  ],
+    esbuild: {
+        supported: {
+            'top-level-await': true,
+        },
+    },
+    plugins: [
+        vue({
+            transformAssetUrls
+        }),
+        quasar({
+            sassVariables: 'src/quasar-variables.sass'
+        }),
+    ],
 })
