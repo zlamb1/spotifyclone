@@ -1,10 +1,12 @@
 // wrapper class for Spotify.Player from Spotify Web Playback SDK
 
-export default class SpotifyPlayer {
+export default class SpPlayer {
     constructor() {
         this.ready = false;
+        this.id = 0;
         this.playerAPI = null;
 
+        this.active = false;
         this.volume = 0.5;
         this.name = 'Custom Client';
         this.paused = false;
@@ -23,7 +25,7 @@ export default class SpotifyPlayer {
 
         this.disconnect = async function() {
             if (this.playerAPI) {
-                if (!this.playerAPI.ready) {
+                if (!this.ready) {
                     ConsoleWarnNotReady();
                     return;
                 }
@@ -36,7 +38,7 @@ export default class SpotifyPlayer {
         this.setName = async function(name) {
             this.name = name;
             if (this.playerAPI) {
-                if (!this.playerAPI.ready) {
+                if (!this.ready) {
                     ConsoleWarnNotReady();
                     return;
                 }
@@ -49,7 +51,7 @@ export default class SpotifyPlayer {
         this.setVolume = async function(volume) {
             this.volume = volume;
             if (this.playerAPI) {
-                if (!this.playerAPI.ready) {
+                if (!this.ready) {
                     ConsoleWarnNotReady();
                     return;
                 }
@@ -61,7 +63,7 @@ export default class SpotifyPlayer {
 
         this.pause = async function() {
             if (this.playerAPI) {
-                if (!this.playerAPI.ready) {
+                if (!this.ready) {
                     ConsoleWarnNotReady();
                     return;
                 }
@@ -73,7 +75,7 @@ export default class SpotifyPlayer {
 
         this.resume = async function() {
             if (this.playerAPI) {
-                if (!this.playerAPI.ready) {
+                if (!this.ready) {
                     ConsoleWarnNotReady();
                     return;
                 }
@@ -86,7 +88,7 @@ export default class SpotifyPlayer {
         this.togglePlayer = async function() {
             this.paused = !this.paused;
             if (this.playerAPI) {
-                if (!this.playerAPI.ready) {
+                if (!this.ready) {
                     ConsoleWarnNotReady();
                     return;
                 }
@@ -99,7 +101,7 @@ export default class SpotifyPlayer {
         this.seek = async function(position) {
             this.elapsed = position;
             if (this.playerAPI) {
-                if (!this.playerAPI.ready) {
+                if (!this.ready) {
                     ConsoleWarnNotReady();
                     return;
                 }
@@ -111,7 +113,7 @@ export default class SpotifyPlayer {
 
         this.skipTrack = async function() {
             if (this.playerAPI) {
-                if (!this.playerAPI.ready) {
+                if (!this.ready) {
                     ConsoleWarnNotReady();
                     return;
                 }
@@ -123,7 +125,7 @@ export default class SpotifyPlayer {
 
         this.previousTrack = async function() {
             if (this.playerAPI) {
-                if (!this.playerAPI.ready) {
+                if (!this.ready) {
                     ConsoleWarnNotReady();
                     return;
                 }
@@ -133,31 +135,32 @@ export default class SpotifyPlayer {
             }
         }
 
+        this.setElapsedAsPercent = async function(percentage) {
+            percentage = percentage ?? 0;
+            if (this.currentTrack) {
+                const duration = this.currentTrack.duration;
+                // sanity-check percentage so that it is in range [0.0 - 1.0]
+                // then seek to the new position
+                this.elapsed = duration * Math.max(Math.min(percentage, 1), 0);
+                return this.seek(this.elapsed);
+            }
+        }
+
+        this.getElapsedAsPercent = function() {
+            if (!this.ready || !this.currentTrack) {
+                return 0;
+            }
+
+            const duration = this.currentTrack.duration;
+            return this.elapsed / duration;
+        }
+
         function ConsoleWarn(func_name) {
             console.warn(`[SpotifyService]: Function ${func_name} called on SpotifyPlayer with no valid Spotify API.`);
         }
 
         function ConsoleWarnNotReady() {
             console.warn('[SpotifyService]: The Spotify Player API is not yet ready.');
-        }
-
-        /**
-         * @param state Spotify Web Playback SDK WebPlaybackState
-         */
-        function setState(state) {
-            this.paused = state.paused;
-            this.elapsed = state.position;
-            this.repeatMode = state.repeat_mode;
-            this.shuffle = state.shuffle;
-            this.currentTrack = state.track_window.current_track;
-        }
-
-        function reset() {
-            this.paused = false;
-            this.elapsed = 0;
-            this.currentTrack = null;
-            this.shuffle = false;
-            this.repeatMode = 0;
         }
     }
 }

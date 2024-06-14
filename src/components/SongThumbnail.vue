@@ -10,10 +10,8 @@ const props = defineProps({
 
 const error = ref(false);
 
-onMounted(() => {
-  if (!props.url.value) {
-    error.value = true;
-  }
+watch(() => props.url, () => {
+  error.value = !props.url;
 });
 
 </script>

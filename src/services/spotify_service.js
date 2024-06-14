@@ -1,57 +1,113 @@
-import {accessToken} from "./spotify_api.js";
-import {reactive} from "vue";
+import {accessToken, fetchSpotifyAPI} from "./spotify_api.js";
+import {ref} from "vue";
 
-import SpotifyPlayer from "../model/SpotifyPlayer.js";
+import SpPlayer from "../model/SpPlayer.js";
+import SpSong from "../model/SpSong.js";
+import SpDevice from "../model/SpDevice.js";
 
-const player = reactive(new SpotifyPlayer());
+const player = ref(new SpPlayer());
+const activeDevice = ref(new SpDevice());
+const spDevices = ref([]);
+
+/**
+ * @param player SpPlayer
+ * @param state Spotify Web Playback SDK WebPlaybackState
+ */
+const setState = (player, state) => {
+    player.value.paused = state.paused;
+    player.value.elapsed = state.position;
+    player.value.repeatMode = state.repeat_mode;
+    player.value.shuffle = state.shuffle;
+    player.value.currentTrack = SpSong.FromSpotifyAPI(state.track_window.current_track);
+}
 
 window.onSpotifyWebPlaybackSDKReady = () => {
-    player.playerAPI = new Spotify.Player({
-        name: player.name,
+    player.value.playerAPI = new Spotify.Player({
+        name: player.value.name,
         getOAuthToken: cb => {
             cb(accessToken);
         },
-        volume: player.volume,
+        volume: player.value.volume,
     });
 
-    player.playerAPI.addListener('ready', ({device_id}) => {
-        player.ready = true;
+    player.value.playerAPI.addListener('ready', ({device_id}) => {
+        player.value.id = device_id;
+        player.value.ready = true;
     });
 
-    player.playerAPI.addListener('not_ready', ({device_id}) => {
-        player.ready = false;
-        player.reset();
+    player.value.playerAPI.addListener('not_ready', ({device_id}) => {
+        player.value.ready = false;
     });
 
-    player.playerAPI.addListener('player_state_changed', (state) => {
+    player.value.playerAPI.addListener('player_state_changed', (state) => {
         if (state) {
-            player.setState(state);
+            setState(player, state);
         }
     });
 
-    player.connect();
+    player.value.connect();
+}
+
+window.onbeforeunload = () => {
+    player.value.disconnect();
 }
 
 const apiScript = document.createElement("script");
 apiScript.src = 'https://sdk.scdn.co/spotify-player.js';
 document.head.appendChild(apiScript);
 
-// query Web Playback SDK as much as possible to avoid incurring API calls
-const refreshInterval = 10;
-setInterval(() => {
-    if (player.playerAPI?.ready) {
-        player.playerAPI.getCurrentState().then((state) => {
-            if (state) {
-                player.setState(state);
-            }
-        });
+// setup polling
+const pollRate = 1000;
 
-        player.playerAPI.getVolume().then((volume) => {
-            if (volume) {
-                player.volume = volume;
+setInterval( () => {
+    // api polling
+    fetchSpotifyAPI({
+        url: 'https://api.spotify.com/v1/me/player/devices'
+    }).then(async (result) => {
+        if (result.ok) {
+            try {
+                const { devices } = await result.json();
+                spDevices.value = [];
+                for (const device of devices) {
+                    const spDevice = SpDevice.FromSpotifyAPI(device);
+                    if (spDevice) {
+                        spDevices.value.push(spDevice);
+                        if (spDevice.id === player.value.id) {
+                            player.value.active = spDevice.active;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn('[SpotifyService]: Failed to parse devices JSON: ', err);
             }
-        });
-    }
-}, refreshInterval);
+        }
+    });
 
-export default player;
+    fetchSpotifyAPI({
+       url: 'https://api.spotify.com/v1/me/player',
+    }).then(async (result) => {
+        if (result.status === 204) {
+            // no state
+            return;
+        }
+        if (result.ok) {
+            try {
+                const { device, repeat_state, shuffle_state, progress_ms, is_playing } = await result.json();
+
+                activeDevice.value = SpDevice.FromSpotifyAPI(device);
+
+                player.value.elapsed = progress_ms;
+                // prevent state from desyncing briefly during requests (i.e. togglePlayer)
+                if (!player.active) {
+                    player.value.repeatMode = repeat_state;
+                    player.value.shuffle = shuffle_state;
+                    player.value.paused = !is_playing;
+                }
+            } catch (err) {
+                console.warn('[SpotifyService]: Failed to parse player state JSON: ', err);
+            }
+        }
+    });
+}, pollRate);
+
+export { player, activeDevice, spDevices };

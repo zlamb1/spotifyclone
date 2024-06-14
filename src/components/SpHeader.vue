@@ -84,3 +84,9 @@ const onClear = async () => {
     </div>
   </q-header>
 </template>
+
+<style scoped>
+.icon-search:before {
+  content: "\e900";
+}
+</style>

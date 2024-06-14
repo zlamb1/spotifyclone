@@ -24,6 +24,8 @@ import {createRouter, createWebHistory} from "vue-router";
 
 const routes = [
     { path: '/', component: HomePage },
+    { path: '/track/:id', name: 'track', component: HomePage },
+    { path: '/artist/:id', name: 'artist', component: HomePage },
 ];
 
 const router = createRouter({

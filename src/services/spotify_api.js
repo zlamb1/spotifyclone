@@ -136,8 +136,10 @@ export async function fetchSpotifyAPI(request) {
         if (result.status === 401) {
             await refreshTokens(clientId);
             // make one more attempt
-            return fetch(request.url, requestInit);
+            return await fetch(request.url, requestInit);
         }
+
+        return result;
     } else {
         console.error('[SpotifyAPI]: Attempted to make API call with no URL.');
     }

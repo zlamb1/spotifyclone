@@ -1,7 +1,7 @@
 <script setup>
 
 import ChangeStrategy from "../model/ChangeStrategy.js";
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 
 const props = defineProps({
   changeStrategy: {
@@ -32,6 +32,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  showKnobOnHover: {
+    type: Boolean,
+    default: true,
+  },
   knobColor: {
     type: String,
     default: (props) => props.color,
@@ -44,28 +48,38 @@ const props = defineProps({
     type: Boolean,
     default: undefined,
   },
+  debounceDuration: {
+    type: Number,
+    default: 0,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const emit = defineEmits(["update"]);
 
 const trackedProgress = ref(0);
+
+const isDebouncing = ref(false);
 const isGrabbing = ref(false);
 const isHovering = ref(false);
 
 const barRef = ref(null);
 
-const computedWidth = computed(() => {
-  return props.changeStrategy === ChangeStrategy.Release ?
-      trackedProgress.value : props.progress;
-})
-
 const sanitizedWidth = computed(() => {
-  if (!computedWidth.value || isNaN(computedWidth.value)) return 0;
-  return Math.min(Math.max(computedWidth.value, 0), 1) * 100;
+  const width = props.changeStrategy === ChangeStrategy.Release ? trackedProgress.value : props.progress;
+  if (!width || isNaN(width)) return 0;
+  return Math.min(Math.max(width, 0), 1) * 100;
 });
 
 const computedHovering = computed(() => {
-  return props.hoverOverride || isHovering.value;
+  return (props.hoverOverride || isHovering.value) && !props.disabled;
+});
+
+const computedShowKnob = computed(() => {
+  return props.showKnob && (!props.showKnobOnHover || computedHovering.value);
 });
 
 const calculateChange = (mouseX, lastChange) => {
@@ -90,25 +104,42 @@ const calculateChange = (mouseX, lastChange) => {
   }
 }
 
-const onMouseDown = () => {
-  isGrabbing.value = true;
+const onMouseDown = (event) => {
+  if (!props.disabled && event.button === 0) {
+    isGrabbing.value = true;
+  }
+}
+
+const onMouseMove = (event) => {
+  if (isGrabbing.value) {
+    calculateChange(event.clientX);
+  }
+}
+
+const onMouseUp = (event) => {
+  if (isGrabbing.value) {
+    if (props.changeStrategy === ChangeStrategy.Release && props.debounceDuration > 0) {
+      isDebouncing.value = true;
+      setTimeout(() => {
+        isDebouncing.value = false;
+        // reset state of trackedProgress
+        trackedProgress.value = props.progress;
+      }, props.debounceDuration);
+    }
+    isGrabbing.value = false;
+    calculateChange(event.clientX, true);
+  }
 }
 
 onMounted(() => {
   trackedProgress.value = props.progress;
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+});
 
-  document.addEventListener('mousemove', (event) => {
-    if (isGrabbing.value) {
-      calculateChange(event.clientX);
-    }
-  });
-
-  document.addEventListener('mouseup', (event) => {
-    if (isGrabbing.value) {
-      isGrabbing.value = false;
-      calculateChange(event.clientX, true);
-    }
-  });
+onUnmounted(() => {
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
 });
 
 watch(() => props.changeStrategy, (newStrategy) => {
@@ -118,7 +149,7 @@ watch(() => props.changeStrategy, (newStrategy) => {
 });
 
 watch(() => props.progress, (newProgess) => {
-  if (props.changeStrategy === ChangeStrategy.Release) {
+  if (props.changeStrategy === ChangeStrategy.Release && !isGrabbing.value && !isDebouncing.value) {
     trackedProgress.value = newProgess;
   }
 });
@@ -126,7 +157,7 @@ watch(() => props.progress, (newProgess) => {
 </script>
 
 <template>
-  <div class="outer q-pa-sm" @mousedown="onMouseDown" draggable="false"
+  <div class="outer q-py-sm" @mousedown="onMouseDown" draggable="false" :disabled="disabled ? 'true' : undefined"
        @mouseover="isHovering = true" @mouseleave="isHovering = false">
     <div class="s-progress-bar" :class="`bg-${computedHovering && hoverColor ? hoverColor : color}`"
          :style="`height: ${size}px`" ref="barRef">
@@ -134,7 +165,7 @@ watch(() => props.progress, (newProgess) => {
            :class="`bg-${computedHovering && hoverTrackColor ? hoverTrackColor : trackColor}`"
            :style="`width: ${sanitizedWidth}%`">
         <div class="s-progress-bar-knob"
-             :class="`background: bg-${knobColor}`" v-show="showKnob" />
+             :class="`background: bg-${knobColor}`" v-show="computedShowKnob" />
       </div>
     </div>
   </div>
