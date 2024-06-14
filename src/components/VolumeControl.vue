@@ -35,7 +35,7 @@ const volumeIcon = computed(() => {
 <template>
   <div class="row items-center">
     <IconBtn :icon="volumeIcon" text-color="accent-two" style="margin-right: 3px" dense round
-             icon-size="28px"
+             icon-size="28px" class="col-auto"
              @click="onClick" @mouseenter="isHoveringVolume = true" @mouseleave="isHoveringVolume = false" />
     <ProgressBar class="col" :progress="player.volume" @update="(value) => player.setVolume(value)"
                  :change-strategy="ChangeStrategy.Constant" :hover-override="isHoveringVolume"

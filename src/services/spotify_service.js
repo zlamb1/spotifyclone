@@ -48,10 +48,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     player.value.connect();
 }
 
-window.onbeforeunload = () => {
-    player.value.disconnect();
-}
-
 const apiScript = document.createElement("script");
 apiScript.src = 'https://sdk.scdn.co/spotify-player.js';
 document.head.appendChild(apiScript);
