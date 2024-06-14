@@ -134,15 +134,11 @@ const onRelease = (event) => {
 onMounted(() => {
   trackedProgress.value = props.progress;
   document.addEventListener('mousemove', onMove);
-  document.addEventListener('touchmove', onMove)
-  document.addEventListener('touchend', onRelease);
   document.addEventListener('mouseup', onRelease);
 });
 
 onUnmounted(() => {
   document.removeEventListener('mousemove', onMove);
-  document.removeEventListener('touchmove', onMove);
-  document.removeEventListener('touchend', onRelease);
   document.removeEventListener('mouseup', onRelease);
 });
 
@@ -161,7 +157,7 @@ watch(() => props.progress, (newProgess) => {
 </script>
 
 <template>
-  <div class="outer q-py-sm" @mousedown="onGrab"  @touchstart="onGrab"
+  <div class="outer q-py-sm" @mousedown="onGrab"  @touchstart="onGrab" @touchmove="onMove" @touchend="onRelease"
        draggable="false" :disabled="disabled ? 'true' : undefined"
        @mouseover="isHovering = true" @mouseleave="isHovering = false">
     <div class="s-progress-bar" :class="`bg-${computedHovering && hoverColor ? hoverColor : color}`"
