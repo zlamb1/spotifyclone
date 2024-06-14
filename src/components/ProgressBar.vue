@@ -104,19 +104,19 @@ const calculateChange = (mouseX, lastChange) => {
   }
 }
 
-const onMouseDown = (event) => {
+const onGrab = (event) => {
   if (!props.disabled && event.button === 0) {
     isGrabbing.value = true;
   }
 }
 
-const onMouseMove = (event) => {
+const onMove = (event) => {
   if (isGrabbing.value) {
     calculateChange(event.clientX);
   }
 }
 
-const onMouseUp = (event) => {
+const onRelease = (event) => {
   if (isGrabbing.value) {
     if (props.changeStrategy === ChangeStrategy.Release && props.debounceDuration > 0) {
       isDebouncing.value = true;
@@ -133,13 +133,17 @@ const onMouseUp = (event) => {
 
 onMounted(() => {
   trackedProgress.value = props.progress;
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseup', onMouseUp);
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove)
+  document.addEventListener('touchend', onRelease);
+  document.addEventListener('mouseup', onRelease);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('mousemove', onMouseMove);
-  document.removeEventListener('mouseup', onMouseUp);
+  document.removeEventListener('mousemove', onMove);
+  document.removeEventListener('touchmove', onMove);
+  document.removeEventListener('touchend', onRelease);
+  document.removeEventListener('mouseup', onRelease);
 });
 
 watch(() => props.changeStrategy, (newStrategy) => {
@@ -157,7 +161,8 @@ watch(() => props.progress, (newProgess) => {
 </script>
 
 <template>
-  <div class="outer q-py-sm" @mousedown="onMouseDown" draggable="false" :disabled="disabled ? 'true' : undefined"
+  <div class="outer q-py-sm" @mousedown="onGrab"  @touchstart="onGrab"
+       draggable="false" :disabled="disabled ? 'true' : undefined"
        @mouseover="isHovering = true" @mouseleave="isHovering = false">
     <div class="s-progress-bar" :class="`bg-${computedHovering && hoverColor ? hoverColor : color}`"
          :style="`height: ${size}px`" ref="barRef">
