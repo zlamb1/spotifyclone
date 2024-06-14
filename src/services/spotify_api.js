@@ -4,6 +4,9 @@ const clientId = 'ddd4d7be0ba74f13bd9f8e4e9912e834';
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
 
+const location = window.location;
+const redirectUri = location.protocol + '//' + location.host + location.pathname;
+
 // config
 const scopes = 'user-read-private user-read-email ' +
     'user-read-playback-state user-modify-playback-state user-read-currently-playing ' +
@@ -71,7 +74,7 @@ async function requestTokens(clientId, code){
     params.append("client_id", clientId);
     params.append("grant_type", "authorization_code");
     params.append("code", code);
-    params.append("redirect_uri", "http://localhost:5173/");
+    params.append("redirect_uri", redirectUri);
     params.append("code_verifier", verifier);
 
     return fetch("https://accounts.spotify.com/api/token", {
@@ -90,7 +93,7 @@ async function redirectToAuthCodeFlow(clientId) {
     const params = new URLSearchParams();
     params.append("client_id", clientId);
     params.append("response_type", "code");
-    params.append("redirect_uri", "http://localhost:5173/");
+    params.append("redirect_uri", redirectUri);
     params.append("scope", scopes);
     params.append("code_challenge_method", "S256");
     params.append("code_challenge", challenge);
