@@ -43,12 +43,13 @@ const formatDuration = (duration) => {
         <SongPreview :song="player.currentTrack" v-if="player?.currentTrack" />
       </div>
       <div class="column col-10 col-sm-6 col-md full-height justify-center">
-        <div class="row justify-center q-mb-sm q-gutter-x-sm">
+        <div class="row justify-center relative-position q-mb-sm q-gutter-x-sm">
           <IconBtn icon="shuffle" dense />
           <IconBtn icon="skip_previous" icon-size="md" dense @click="player.previousTrack()" />
           <IconBtn :icon="computedPlayIcon" color="secondary" icon-color="dark" icon-size="md" round push @click="player.togglePlayer()" />
           <IconBtn icon="skip_next" icon-size="md" dense @click="player.skipTrack()" />
           <IconBtn icon="repeat" dense />
+          <DeviceBtn class="absolute-right" v-show="screen.lt.md" />
         </div>
         <div class="row no-wrap q-gutter-x-sm">
           <span class="non-selectable text-accent-two">{{formatDuration(player?.elapsed)}}</span>
