@@ -12,6 +12,8 @@ import ChangeStrategy from "../model/ChangeStrategy.js";
 import IconBtn from "./IconBtn.vue";
 import DeviceBtn from "./DeviceBtn.vue";
 import VolumeControl from "./VolumeControl.vue";
+import SpRepeatMode from "../model/SpRepeatMode.js";
+import RepeatControl from "./RepeatControl.vue";
 
 const player = useSpotifyPlayer();
 const activeDevice = useActiveDevice();
@@ -45,11 +47,11 @@ const formatDuration = (duration) => {
       <div class="column col-10 col-sm-4 col-md full-height justify-center">
         <div class="row justify-center relative-position q-mb-sm q-gutter-x-sm">
           <DeviceBtn class="absolute-left" v-show="screen.lt.sm" />
-          <IconBtn icon="shuffle" dense />
+          <IconBtn icon="shuffle" :icon-color="player.shuffle ? 'primary' : undefined" dense @click="player.toggleShuffle()" />
           <IconBtn icon="skip_previous" icon-size="md" dense @click="player.prev()" />
           <IconBtn :icon="computedPlayIcon" color="secondary" icon-color="dark" icon-size="md" round push @click="player.togglePlayer()" />
           <IconBtn icon="skip_next" icon-size="md" dense @click="player.skip()" />
-          <IconBtn icon="repeat" dense />
+          <RepeatControl />
           <VolumeControl class="absolute-right" collapsed v-show="screen.lt.sm" />
         </div>
         <div class="row no-wrap q-gutter-x-sm">

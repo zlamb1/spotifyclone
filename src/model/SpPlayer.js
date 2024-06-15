@@ -2,10 +2,14 @@
 
 import SpRepeatMode from "./SpRepeatMode.js";
 import {
-    spotifySeekToPosition, spotifySetVolume,
+    spotifySeekToPosition, spotifySetRepeatMode, spotifySetVolume,
     spotifySkipToNext, spotifySkipToPrevious,
-    spotifyTogglePlayback
+    spotifyTogglePlayback, spotifyTogglePlaybackShuffle
 } from "../composables/useSpotifyAPI.js";
+import {fetchSpotifyAPI} from "../services/spotify_api.js";
+import {queryPlayerState} from "../services/spotify_service.js";
+import RepeatMode from "./SpSong.js";
+import spRepeatMode from "./SpRepeatMode.js";
 
 export default class SpPlayer {
     constructor() {
@@ -24,7 +28,7 @@ export default class SpPlayer {
         this.shuffle = false;
         this.repeatMode = SpRepeatMode.Off;
 
-        this.debouncingDuration = 0;
+        this.debounceDuration = 0;
         this.debouncedProps = {};
 
         this.connect = async function() {
@@ -64,7 +68,7 @@ export default class SpPlayer {
         this.setVolume = async function(volume) {
             this.volume = volume;
             this.debounceProp('volume');
-            if (this.useWebAPI) return spotifySetVolume(Math.floor(volume.toFixed(2) * 100));
+            if (this.useWebAPI) return this.callWebAPI(() => spotifySetVolume(Math.floor(volume.toFixed(2) * 100)));
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -107,7 +111,7 @@ export default class SpPlayer {
         this.togglePlayer = async function() {
             this.playing = !this.playing;
             this.debounceProp('playing');
-            if (this.useWebAPI) return spotifyTogglePlayback(this.playing);
+            if (this.useWebAPI) return this.callWebAPI(() => spotifyTogglePlayback(this.playing));
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -122,7 +126,7 @@ export default class SpPlayer {
         this.seek = async function(position) {
             this.elapsed = position;
             this.debounceProp('elapsed')
-            if (this.useWebAPI) return spotifySeekToPosition(Math.floor(position));
+            if (this.useWebAPI) return this.callWebAPI(() => spotifySeekToPosition(Math.floor(position)));
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -136,7 +140,7 @@ export default class SpPlayer {
 
         this.skip = async function() {
             // does not need to be debounced
-            if (this.useWebAPI) return spotifySkipToNext();
+            if (this.useWebAPI) return this.callWebAPI(() => spotifySkipToNext());
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -150,7 +154,7 @@ export default class SpPlayer {
 
         this.prev = async function() {
             // does not need to be debounced
-            if (this.useWebAPI) return spotifySkipToPrevious();
+            if (this.useWebAPI) return this.callWebAPI( () => spotifySkipToPrevious());
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -160,6 +164,20 @@ export default class SpPlayer {
             } else {
                 ConsoleWarn('previousTrack');
             }
+        }
+
+        // only usable through Web API
+        this.toggleShuffle = async function() {
+            this.shuffle = !this.shuffle;
+            this.debounceProp('shuffle')
+            return this.callWebAPI(() => spotifyTogglePlaybackShuffle(this.shuffle));
+        }
+
+        // only usable through Web API
+        this.toggleRepeatMode = async function() {
+            this.repeatMode = SpRepeatMode.NextMode(this.repeatMode);
+            this.debounceProp('repeatMode');
+            return this.callWebAPI(() => spotifySetRepeatMode(SpRepeatMode.ToString(this.repeatMode)));
         }
 
         this.setElapsedAsPercent = async function(percentage) {
@@ -182,6 +200,17 @@ export default class SpPlayer {
             return this.elapsed / duration;
         }
 
+        // query Web API after call to get updated state
+        this.callWebAPI = async (func) => {
+            const result = await func();
+            if (result.ok) {
+                setTimeout(async () => {
+                    await queryPlayerState();
+                }, 250);
+            }
+            return result;
+        }
+
         this.isDebounced = (propName) => {
             return !!this.debouncedProps[propName];
         }
@@ -194,7 +223,7 @@ export default class SpPlayer {
                 }
                 this.debouncedProps[propName] = setTimeout(() => {
                     this.debouncedProps[propName] = undefined;
-                }, this.debouncingDuration);
+                }, this.debounceDuration);
                 return true;
             }
         }

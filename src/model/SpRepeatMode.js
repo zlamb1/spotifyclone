@@ -29,6 +29,15 @@ const SpRepeatMode = Object.freeze({
             default: return SpRepeatMode.Off;
         }
     },
+
+    ToString: (repeatMode) => {
+        switch (repeatMode) {
+            case SpRepeatMode.Off: return 'off';
+            case SpRepeatMode.Context: return 'context';
+            case SpRepeatMode.Track: return 'track';
+            default: return 'off';
+        }
+    }
 });
 
 export default SpRepeatMode;

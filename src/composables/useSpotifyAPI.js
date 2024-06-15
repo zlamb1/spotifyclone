@@ -86,6 +86,26 @@ export async function spotifySkipToPrevious(deviceId) {
     });
 }
 
+export async function spotifyTogglePlaybackShuffle(state, deviceId) {
+    return fetchSpotifyAPI({
+        url: appendArgs('https://api.spotify.com/v1/me/player/shuffle', {
+            state: state,
+            'device_id': deviceId,
+        }),
+        method: 'PUT',
+    });
+}
+
+export async function spotifySetRepeatMode(state, deviceId) {
+    return fetchSpotifyAPI({
+        url: appendArgs('https://api.spotify.com/v1/me/player/repeat', {
+            state: state,
+            'device_id': deviceId,
+        }),
+        method: 'PUT',
+    });
+}
+
 export async function spotifySeekToPosition(position, deviceId) {
     return fetchSpotifyAPI({
         url: `https://api.spotify.com/v1/me/player/seek?position_ms=${position ?? 0}`,

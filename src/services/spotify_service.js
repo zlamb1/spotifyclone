@@ -6,9 +6,7 @@ import SpSong from "../model/SpSong.js";
 import SpDevice from "../model/SpDevice.js";
 import SpRepeatMode from "../model/SpRepeatMode.js";
 import SpType from "../model/SpType.js";
-import {changeSpotifyDevice} from "../composables/useSpotifyAPI.js";
 import SpTrack from "../model/SpSong.js";
-import SpDeviceType from "../model/SpDeviceType.js";
 
 const player = ref(new SpPlayer());
 const activeDevice = ref(null);
@@ -81,46 +79,10 @@ const apiScript = document.createElement("script");
 apiScript.src = 'https://sdk.scdn.co/spotify-player.js';
 document.head.appendChild(apiScript);
 
-// setup polling
-const criticalPollRate = 5 * 1000;
-player.value.debouncingDuration = criticalPollRate;
-
-const nonCriticalPollRate = 15 * 1000;
-
-// solution to continue tracking elapsed time
-const trackInterval = 250;
-setInterval(() => {
-    /*if (player.value.playing && player.elapsed <= player.value.currentlyPlaying?.duration) {
-        player.value.elapsed = Math.min(player.value.elapsed + trackInterval, player.value.currentlyPlaying.duration);
-    }*/
-    if (player.value.playing) {
-        player.value.elapsed += trackInterval;
-    }
-}, trackInterval);
-
-setInterval(async () => {
-    const result = await fetchSpotifyAPI({url: 'https://api.spotify.com/v1/me/player/devices'});
-    if (result.ok) {
-        try {
-            const { devices } = await result.json();
-            const newSpDevices = [];
-            for (const device of devices) {
-                const spDevice = SpDevice.FromSpotifyAPI(device);
-                if (spDevice) {
-                    newSpDevices.push(spDevice);
-                }
-            }
-            spDevices.value = newSpDevices;
-        } catch (err) {
-            console.warn('[SpotifyService]: Failed to parse devices JSON: ', err);
-        }
-    }
-}, nonCriticalPollRate);
-
-setInterval( async () => {
+async function queryPlayerState() {
     const result = await fetchSpotifyAPI({
         url: 'https://api.spotify.com/v1/me/player',
-    })
+    });
 
     if (result.status === 204) {
         // no state
@@ -167,6 +129,46 @@ setInterval( async () => {
             console.warn('[SpotifyService]: Failed to parse player state JSON: ', err);
         }
     }
+}
+
+// fetch state on startup
+queryPlayerState();
+
+// setup polling
+const criticalPollRate = 5 * 1000;
+player.value.debounceDuration = 2000;
+
+const nonCriticalPollRate = 15 * 1000;
+
+// solution to continue tracking elapsed time
+const trackInterval = 250;
+setInterval(() => {
+    if (player.value.playing && (player.value.elapsed + trackInterval) <= player.value?.currentlyPlaying?.duration) {
+        player.value.elapsed += trackInterval;
+    }
+}, trackInterval);
+
+setInterval(async () => {
+    const result = await fetchSpotifyAPI({url: 'https://api.spotify.com/v1/me/player/devices'});
+    if (result.ok) {
+        try {
+            const { devices } = await result.json();
+            const newSpDevices = [];
+            for (const device of devices) {
+                const spDevice = SpDevice.FromSpotifyAPI(device);
+                if (spDevice) {
+                    newSpDevices.push(spDevice);
+                }
+            }
+            spDevices.value = newSpDevices;
+        } catch (err) {
+            console.warn('[SpotifyService]: Failed to parse devices JSON: ', err);
+        }
+    }
+}, nonCriticalPollRate);
+
+setInterval( async () => {
+    await queryPlayerState();
 }, criticalPollRate);
 
-export { player, activeDevice, spDevices };
+export { player, activeDevice, spDevices, queryPlayerState };

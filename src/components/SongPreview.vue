@@ -7,7 +7,7 @@ import SpSong from "../model/SpSong.js";
 import IconBtn from "./IconBtn.vue";
 import SongThumbnail from "./SongThumbnail.vue";
 
-defineProps({
+const props = defineProps({
   song: {
     type: SpSong,
   },
@@ -45,10 +45,9 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  if (clearId) {
-    clearInterval(clearId);
-  }
+  if (clearId) clearInterval(clearId);
 });
+
 </script>
 
 <template>
@@ -57,13 +56,13 @@ onUnmounted(() => {
     <div class="row col q-pa-md q-gutter-x-sm" @mouseover="onMouseOver" @mouseleave="isHovering = false">
       <div class="column song-scroller" ref="scrollContainer">
         <div>
-          <RouterLink class="text-secondary link" active-class="underline" :to="{name: 'track', params: { id: '0' }}">
+          <RouterLink class="text-secondary link" active-class="underline" :to="{name: 'track', params: { id: song.id }}">
             {{song.name}}
           </RouterLink>
         </div>
         <div class="row no-wrap">
           <div v-for="(artist, index) in song.artists" :key="index">
-            <RouterLink class="text-accent-two link" :to="{name: 'artist', params: { id: 0 }}">
+            <RouterLink class="text-accent-two link" :to="{name: 'artist', params: { id: artist.id }}">
               {{artist.name}}
             </RouterLink>
             <span class="text-accent-two non-selectable" v-show="index !== song.artists.length - 1">,</span>

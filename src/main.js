@@ -21,9 +21,11 @@ import 'quasar/src/css/index.sass';
 // Create router
 import HomePage from "./pages/HomePage.vue";
 import {createRouter, createWebHistory} from "vue-router";
+import BrowsePage from "./pages/BrowsePage.vue";
 
 const routes = [
     { path: '/', component: HomePage },
+    { path: '/browse', component: BrowsePage },
     { path: '/track/:id', name: 'track', component: HomePage },
     { path: '/artist/:id', name: 'artist', component: HomePage },
 ];
