@@ -100,13 +100,14 @@ setInterval(async () => {
     if (result.ok) {
         try {
             const { devices } = await result.json();
-            spDevices.value = [];
+            const newSpDevices = [];
             for (const device of devices) {
                 const spDevice = SpDevice.FromSpotifyAPI(device);
                 if (spDevice) {
-                    spDevices.value.push(spDevice);
+                    newSpDevices.push(spDevice);
                 }
             }
+            spDevices.value = newSpDevices;
         } catch (err) {
             console.warn('[SpotifyService]: Failed to parse devices JSON: ', err);
         }
@@ -132,7 +133,7 @@ setInterval( async () => {
             activeDevice.value = SpDevice.FromSpotifyAPI(device);
             if (device) {
                 // cache active device if it doesn't exist yet
-                const found = findDevice(device);
+                const found = findDevice(activeDevice.value.id);
                 if (!found) {
                     spDevices.value.push(activeDevice.value);
                 }

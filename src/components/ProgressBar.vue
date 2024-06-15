@@ -162,11 +162,15 @@ onMounted(() => {
   trackedProgress.value = props.progress;
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mouseup', onMouseUp);
+  document.addEventListener('touchcancel', onTouchEnd);
+  document.addEventListener('touchend', onTouchEnd);
 });
 
 onUnmounted(() => {
   document.removeEventListener('mousemove', onMouseMove);
   document.removeEventListener('mouseup', onMouseUp);
+  document.removeEventListener('touchcancel', onTouchEnd);
+  document.removeEventListener('touchend', onTouchEnd);
 });
 
 watch(() => props.changeStrategy, (newStrategy) => {
