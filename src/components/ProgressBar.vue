@@ -128,8 +128,8 @@ const onTouchMove = (event) => {
   }
 }
 
-const onTouchEnd = (event) => {
-  if (isDragging.value && event?.touches?.length > 0) {
+const onTouchEnd = () => {
+  if (isDragging.value) {
     if (props.changeStrategy === ChangeStrategy.Release && props.debounceDuration > 0) {
       isDebouncing.value = true;
       setTimeout(() => {
@@ -139,7 +139,6 @@ const onTouchEnd = (event) => {
       }, props.debounceDuration);
     }
     isDragging.value = false;
-    calculateChange(event.touches[0].clientX, true);
   }
 }
 
