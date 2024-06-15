@@ -120,10 +120,17 @@ async function generateCodeChallenge(codeVerifier) {
         .replace(/=+$/, '');
 }
 
+const rateLimitTimeout = 60 * 1000;
+let rateLimited = false;
+
 export async function fetchSpotifyAPI(request) {
     if (!accessToken) {
         console.error('[SpotifyAPI]: Attempted to make API call with invalid access token.');
         return;
+    }
+
+    if (rateLimited) {
+        console.warn(`[SpotifyAPI]: Cannot make API calls due to rate limiting. Please wait.`);
     }
 
     if (request.url) {
@@ -145,8 +152,11 @@ export async function fetchSpotifyAPI(request) {
             return await fetch(request.url, requestInit);
         }
 
-        if (result.status === 429) {
-            console.log(result.headers)
+        if (result.status === 429 && !rateLimited) {
+            rateLimited = true;
+            setTimeout(() => {
+                rateLimited = false;
+            }, rateLimitTimeout);
         }
 
         return result;
