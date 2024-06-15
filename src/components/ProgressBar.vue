@@ -52,6 +52,14 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  vertical: {
+    type: Boolean,
+    default: false,
+  },
+  inverted: {
+    type: Boolean,
+    default: false,
+  },
   disabled: {
     type: Boolean,
     default: false,
@@ -68,27 +76,29 @@ const isHovering = ref(false);
 
 const barRef = ref(null);
 
-const sanitizedWidth = computed(() => {
-  const width = props.changeStrategy === ChangeStrategy.Release ? trackedProgress.value : props.progress;
-  if (!width || isNaN(width)) return 0;
-  return Math.min(Math.max(width, 0), 1) * 100;
+const sanitizedSize = computed(() => {
+  const size = props.changeStrategy === ChangeStrategy.Release ? trackedProgress.value : props.progress;
+  if (!size || isNaN(size)) return 0;
+  return Math.min(Math.max(size, 0), 1) * 100;
 });
 
 const computedHovering = computed(() => {
-  return (props.hoverOverride || isHovering.value) && !props.disabled;
+  return (props.hoverOverride || isHovering.value || isDragging.value) && !props.disabled;
 });
 
 const computedShowKnob = computed(() => {
   return props.showKnob && (!props.showKnobOnHover || computedHovering.value);
 });
 
-const calculateChange = (mouseX, lastChange) => {
+const calculateChange = (position, lastChange) => {
   const $el = barRef.value;
   if ($el) {
     const boundingRect = $el.getBoundingClientRect();
-    const deltaX = Math.min(Math.max(mouseX - boundingRect.left, 0), boundingRect.width);
-    const percentage = deltaX / boundingRect.width;
-
+    const edge = props.vertical ? boundingRect.top : boundingRect.left;
+    const delta = Math.min(Math.max(position - edge, 0),
+        props.vertical ? boundingRect.height : boundingRect.width);
+    const size = props.vertical ? boundingRect.height : boundingRect.width;
+    const percentage = props.inverted ? (size - delta) / size : delta / size;
     switch (props.changeStrategy) {
       case ChangeStrategy.Constant:
         emit('update', percentage);
@@ -112,7 +122,7 @@ const onMouseDown = (event) => {
 
 const onMouseMove = (event) => {
   if (isDragging.value) {
-    calculateChange(event.clientX);
+    calculateChange(props.vertical ? event.clientY : event.clientX);
   }
 }
 
@@ -122,11 +132,12 @@ const onTouchStart = () => {
   }
 }
 
-const touchMoveX = ref(0);
+const trackedMove = ref(0);
 const onTouchMove = (event) => {
   if (isDragging.value && event?.touches?.length > 0) {
-    calculateChange(event.touches[0].clientX);
-    touchMoveX.value = event.touches[0].clientX;
+    const move = props.vertical ? event.touches[0].clientY : event.touches[0].clientX;
+    calculateChange(move);
+    trackedMove.value = move;
   }
 }
 
@@ -141,7 +152,7 @@ const onTouchEnd = (event) => {
       }, props.debounceDuration);
     }
     isDragging.value = false;
-    calculateChange(touchMoveX.value, true);
+    calculateChange(trackedMove.value, true);
   }
 }
 
@@ -156,7 +167,7 @@ const onMouseUp = (event) => {
       }, props.debounceDuration);
     }
     isDragging.value = false;
-    calculateChange(event.clientX, true);
+    calculateChange(props.vertical ? event.clientY : event.clientX, true);
   }
 }
 
@@ -193,13 +204,13 @@ watch(() => props.progress, (newProgess) => {
   <div class="outer q-py-sm" @mousedown="onMouseDown"  @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd"
        draggable="false" :disabled="disabled ? 'true' : undefined"
        @mouseover="isHovering = true" @mouseleave="isHovering = false">
-    <div class="s-progress-bar" :class="`bg-${computedHovering && hoverColor ? hoverColor : color}`"
-         :style="`height: ${size}px`" ref="barRef">
-      <div class="s-progress-bar-track flex items-center full-height"
-           :class="`bg-${computedHovering && hoverTrackColor ? hoverTrackColor : trackColor}`"
-           :style="`width: ${sanitizedWidth}%`">
+    <div class="s-progress-bar relative-position" :class="`bg-${computedHovering && hoverColor ? hoverColor : color} ${vertical ? 'vertical' : 'horizontal'}`"
+         :style="`--size: ${size}px`" ref="barRef">
+      <div class="s-progress-bar-track flex items-center"
+           :class="`bg-${computedHovering && hoverTrackColor ? hoverTrackColor : trackColor} ${inverted ? 'inverted' : ''}`"
+           :style="`--size: ${sanitizedSize}%`">
         <div class="s-progress-bar-knob"
-             :class="`background: bg-${knobColor}`" v-show="computedShowKnob" />
+             :class="`bg-${knobColor} ${vertical ? 'vertical' : 'horizontal'}`" v-show="computedShowKnob" />
       </div>
     </div>
   </div>
@@ -209,20 +220,55 @@ watch(() => props.progress, (newProgess) => {
 .outer {
   cursor: grab;
 }
+.s-progress-bar {
+  --size: 0px;
+}
 .s-progress-bar, .s-progress-bar-track {
   border-radius: 25px;
 }
+.s-progress-bar.horizontal {
+  width: 100%;
+  height: var(--size);
+}
+.s-progress-bar.vertical {
+  width: var(--size);
+  height: 100%;
+}
 .s-progress-bar-track {
-  float: left;
+  --size: 0%;
   position: relative;
+}
+.s-progress-bar-track.inverted {
+  transform: rotate(180deg);
+}
+.s-progress-bar.horizontal .s-progress-bar-track {
+  width: var(--size);
+  height: 100%;
+}
+.s-progress-bar.horizontal .s-progress-bar-track.inverted {
+  left: calc(100% - var(--size));
+}
+.s-progress-bar.vertical .s-progress-bar-track {
+  width: 100%;
+  height: var(--size);
+}
+.s-progress-bar.vertical .s-progress-bar-track.inverted {
+  top: calc(100% - var(--size));
 }
 .s-progress-bar-knob {
   width: 12px;
   height: 12px;
   position: absolute;
-  right: 0;
   border-radius: 50%;
   border: 1px solid #b5b5b5;
+}
+.s-progress-bar-knob.horizontal {
+  right: 0;
   transform: translateX(50%);
+}
+.s-progress-bar-knob.vertical {
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
 }
 </style>

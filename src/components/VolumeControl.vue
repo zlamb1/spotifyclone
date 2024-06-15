@@ -38,7 +38,7 @@ const volumeIcon = computed(() => {
              icon-size="28px" class="col-auto"
              @click="onClick" @mouseenter="isHoveringVolume = true" @mouseleave="isHoveringVolume = false" />
     <ProgressBar class="col" :progress="player.volume" @update="(value) => player.setVolume(value)"
-                 :change-strategy="ChangeStrategy.Constant" :hover-override="isHoveringVolume"
+                 :change-strategy="ChangeStrategy.Release" :hover-override="isHoveringVolume"
                  color="accent-two" track-color="secondary" hover-track-color="primary" knob-color="secondary" />
   </div>
 </template>
