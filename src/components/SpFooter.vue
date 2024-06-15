@@ -67,12 +67,23 @@ const formatDuration = (duration) => {
         <VolumeControl class="col" />
       </div>
     </div>
-    <div class="q-px-sm q-pb-sm full-width" v-show="!player.active && activeDevice">
-      <div class="flex justify-end items-center bg-primary full-width rounded-borders q-pa-sm non-selectable">
-        <q-icon name="volume_down" color="dark" class="q-mr-xs"
-                style="border: 1px solid var(--q-dark); border-radius: 50%;" />
-        <span class="text-dark">Playing on {{activeDevice?.name}}</span>
+    <transition name="fade">
+      <div class="q-px-sm q-pb-sm full-width" v-show="!player.active && activeDevice">
+        <div class="flex justify-end items-center bg-primary full-width rounded-borders q-pa-sm non-selectable">
+          <q-icon name="volume_down" color="dark" class="q-mr-xs"
+                  style="border: 1px solid var(--q-dark); border-radius: 50%;" />
+          <span class="text-dark">Playing on {{activeDevice?.name}}</span>
+        </div>
       </div>
-    </div>
+    </transition>
   </q-footer>
 </template>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+</style>

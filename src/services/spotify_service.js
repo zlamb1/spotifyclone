@@ -8,6 +8,7 @@ import SpRepeatMode from "../model/SpRepeatMode.js";
 import SpType from "../model/SpType.js";
 import {changeSpotifyDevice} from "../composables/useSpotifyAPI.js";
 import SpTrack from "../model/SpSong.js";
+import SpDeviceType from "../model/SpDeviceType.js";
 
 const player = ref(new SpPlayer());
 const activeDevice = ref(null);
@@ -27,6 +28,13 @@ const setState = (player, state) => {
     if (!player.value.isDebounced('repeatMode')) player.value.repeatMode = SpRepeatMode.FromSpotifyAPI(state.repeat_mode);
 }
 
+/**
+ * @param deviceId Spotify API Device ID
+ */
+const findDevice = (deviceId) => {
+    return spDevices.value.find((device) => device.id === deviceId);
+}
+
 window.onSpotifyWebPlaybackSDKReady = () => {
     player.value.playerAPI = new Spotify.Player({
         name: player.value.name,
@@ -39,6 +47,21 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     player.value.playerAPI.addListener('ready', ({device_id}) => {
         player.value.id = device_id;
         player.value.ready = true;
+
+        // cache player device if it doesn't exist yet
+        const found = findDevice(device_id);
+        if (!found) {
+            const playerDevice = SpDevice.FromSpotifyAPI({
+                id: device_id,
+                is_active: false,
+                is_private_session: false,
+                name: player.value.name,
+                type: 'Computer',
+                volume_percent: player.value.volume,
+                supports_volume: true,
+            });
+            spDevices.value.push(playerDevice);
+        }
     });
 
     player.value.playerAPI.addListener('not_ready', ({device_id}) => {
@@ -62,7 +85,7 @@ document.head.appendChild(apiScript);
 const criticalPollRate = 5 * 1000;
 player.value.debouncingDuration = criticalPollRate;
 
-const nonCriticalPollRate = 30 * 1000;
+const nonCriticalPollRate = 15 * 1000;
 
 // solution to continue tracking elapsed time
 const trackInterval = 250;
@@ -97,6 +120,8 @@ setInterval( async () => {
 
     if (result.status === 204) {
         // no state
+        activeDevice.value = null;
+        player.value.playing = false;
         return;
     }
 
@@ -106,6 +131,12 @@ setInterval( async () => {
 
             activeDevice.value = SpDevice.FromSpotifyAPI(device);
             if (device) {
+                // cache active device if it doesn't exist yet
+                const found = findDevice(device);
+                if (!found) {
+                    spDevices.value.push(activeDevice.value);
+                }
+
                 if (activeDevice.value.id === player.value.id) {
                     player.value.active = true;
                     player.value.useWebAPI = false;
