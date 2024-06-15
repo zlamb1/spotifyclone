@@ -122,9 +122,11 @@ const onTouchStart = () => {
   }
 }
 
+const touchMoveX = ref(0);
 const onTouchMove = (event) => {
   if (isDragging.value && event?.touches?.length > 0) {
     calculateChange(event.touches[0].clientX);
+    touchMoveX.value = event.touches[0].clientX;
   }
 }
 
@@ -139,7 +141,7 @@ const onTouchEnd = (event) => {
       }, props.debounceDuration);
     }
     isDragging.value = false;
-    console.log(event);
+    calculateChange(touchMoveX.value, true);
   }
 }
 
