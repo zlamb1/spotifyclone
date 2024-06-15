@@ -1,15 +1,9 @@
 // wrapper class for Spotify.Player from Spotify Web Playback SDK
 
 import SpRepeatMode from "./SpRepeatMode.js";
-import {
-    spotifySeekToPosition, spotifySetRepeatMode, spotifySetVolume,
-    spotifySkipToNext, spotifySkipToPrevious,
-    spotifyTogglePlayback, spotifyTogglePlaybackShuffle
-} from "../composables/useSpotifyAPI.js";
-import {fetchSpotifyAPI} from "../services/spotify_api.js";
+import { SpotifyWebAPI } from "../composables/useSpotifyAPI.js";
 import {queryPlayerState} from "../services/spotify_service.js";
-import RepeatMode from "./SpSong.js";
-import spRepeatMode from "./SpRepeatMode.js";
+import SpType from "./SpType.js";
 
 export default class SpPlayer {
     constructor() {
@@ -68,7 +62,7 @@ export default class SpPlayer {
         this.setVolume = async function(volume) {
             this.volume = volume;
             this.debounceProp('volume');
-            if (this.useWebAPI) return this.callWebAPI(() => spotifySetVolume(Math.floor(volume.toFixed(2) * 100)));
+            if (this.useWebAPI) return this.callWebAPI(() => SpotifyWebAPI.Player.SetPlaybackVolume(Math.floor(volume.toFixed(2) * 100)));
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -111,7 +105,7 @@ export default class SpPlayer {
         this.togglePlayer = async function() {
             this.playing = !this.playing;
             this.debounceProp('playing');
-            if (this.useWebAPI) return this.callWebAPI(() => spotifyTogglePlayback(this.playing));
+            if (this.useWebAPI) return this.callWebAPI(() => SpotifyWebAPI.Player.TogglePlayback(this.playing));
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -126,7 +120,7 @@ export default class SpPlayer {
         this.seek = async function(position) {
             this.elapsed = position;
             this.debounceProp('elapsed')
-            if (this.useWebAPI) return this.callWebAPI(() => spotifySeekToPosition(Math.floor(position)));
+            if (this.useWebAPI) return this.callWebAPI(() => SpotifyWebAPI.Player.SeekToPosition(Math.floor(position)));
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -140,7 +134,7 @@ export default class SpPlayer {
 
         this.skip = async function() {
             // does not need to be debounced
-            if (this.useWebAPI) return this.callWebAPI(() => spotifySkipToNext());
+            if (this.useWebAPI) return this.callWebAPI(() => SpotifyWebAPI.Player.SkipToNext());
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -154,7 +148,7 @@ export default class SpPlayer {
 
         this.prev = async function() {
             // does not need to be debounced
-            if (this.useWebAPI) return this.callWebAPI( () => spotifySkipToPrevious());
+            if (this.useWebAPI) return this.callWebAPI( () => SpotifyWebAPI.Player.SkipToPrevious());
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -170,14 +164,14 @@ export default class SpPlayer {
         this.toggleShuffle = async function() {
             this.shuffle = !this.shuffle;
             this.debounceProp('shuffle')
-            return this.callWebAPI(() => spotifyTogglePlaybackShuffle(this.shuffle));
+            return this.callWebAPI(() => SpotifyWebAPI.Player.TogglePlaybackShuffle(this.shuffle));
         }
 
         // only usable through Web API
         this.toggleRepeatMode = async function() {
             this.repeatMode = SpRepeatMode.NextMode(this.repeatMode);
             this.debounceProp('repeatMode');
-            return this.callWebAPI(() => spotifySetRepeatMode(SpRepeatMode.ToString(this.repeatMode)));
+            return this.callWebAPI(() => SpotifyWebAPI.Player.SetRepeatMode(SpRepeatMode.ToString(this.repeatMode)));
         }
 
         this.setElapsedAsPercent = async function(percentage) {

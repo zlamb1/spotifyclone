@@ -2,9 +2,9 @@
 
 import {ref, watch} from "vue";
 
-import SpDeviceType from "../model/SpDeviceType.js";
+import SpDeviceType from "../../model/SpDeviceType.js";
 
-import {changeSpotifyDevice, useActiveDevice, useDevices, useSpotifyPlayer} from "../composables/useSpotifyAPI.js";
+import {SpotifyWebAPI, useActiveDevice, useDevices, useSpotifyPlayer} from "../../composables/useSpotifyAPI.js";
 
 const menu = ref(null);
 
@@ -49,7 +49,7 @@ watch(devices, () => {
       <q-list>
         <q-item v-for="device in devices" :active="device.id === activeDevice?.id"
                 active-class="text-primary" clickable v-close-popup
-                @click="changeSpotifyDevice(device.id, !player.paused)">
+                @click="SpotifyWebAPI.Player.TransferPlayback(device.id, !player.paused)">
           <q-item-section avatar>
             <q-icon :name="getDeviceIcon(device.type)" size="md" />
           </q-item-section>

@@ -38,77 +38,77 @@ function appendArgs(url, args) {
 
 // API Calls
 
-export async function changeSpotifyDevice(deviceId, play) {
-    return fetchSpotifyAPI({
-        url: 'https://api.spotify.com/v1/me/player',
-        method: 'PUT',
-        body: JSON.stringify({
-            'device_ids': [deviceId],
-            play: play ?? false,
-        }),
-    });
-}
-
-export async function spotifySetVolume(volume, deviceId) {
-    return fetchSpotifyAPI({
-        url: appendArgs('https://api.spotify.com/v1/me/player/volume', {
-            'volume_percent': volume ?? 0,
-            'device_id': deviceId,
-        }),
-        method: 'PUT',
-    })
-}
-
-export async function spotifyTogglePlayback(toggle, deviceId) {
-    return fetchSpotifyAPI({
-        url: appendArgs(`https://api.spotify.com/v1/me/player/${toggle ? 'play' : 'pause'}`, {
-            'device_id': deviceId,
-        }),
-        method: 'PUT',
-    });
-}
-
-export async function spotifySkipToNext(deviceId) {
-    return fetchSpotifyAPI({
-        url: appendArgs('https://api.spotify.com/v1/me/player/next', {
-            'device_id': deviceId,
-        }),
-        method: 'POST',
-    });
-}
-
-export async function spotifySkipToPrevious(deviceId) {
-    return fetchSpotifyAPI({
-        url: appendArgs('https://api.spotify.com/v1/me/player/previous', {
-            'device_id': deviceId,
-        }),
-        method: 'POST',
-    });
-}
-
-export async function spotifyTogglePlaybackShuffle(state, deviceId) {
-    return fetchSpotifyAPI({
-        url: appendArgs('https://api.spotify.com/v1/me/player/shuffle', {
-            state: state,
-            'device_id': deviceId,
-        }),
-        method: 'PUT',
-    });
-}
-
-export async function spotifySetRepeatMode(state, deviceId) {
-    return fetchSpotifyAPI({
-        url: appendArgs('https://api.spotify.com/v1/me/player/repeat', {
-            state: state,
-            'device_id': deviceId,
-        }),
-        method: 'PUT',
-    });
-}
-
-export async function spotifySeekToPosition(position, deviceId) {
-    return fetchSpotifyAPI({
-        url: `https://api.spotify.com/v1/me/player/seek?position_ms=${position ?? 0}`,
-        method: 'PUT',
-    });
-}
+export const SpotifyWebAPI = Object.freeze({
+    Player: {
+        TransferPlayback: async (deviceId, play) => {
+            return fetchSpotifyAPI({
+                url: 'https://api.spotify.com/v1/me/player',
+                method: 'PUT',
+                body: JSON.stringify({
+                    'device_ids': [deviceId],
+                    play: play ?? false,
+                }),
+            });
+        },
+        TogglePlayback: async (play, deviceId) => {
+            return fetchSpotifyAPI({
+                url: appendArgs(`https://api.spotify.com/v1/me/player/${play ? 'play' : 'pause'}`, {
+                    'device_id': deviceId,
+                }),
+                method: 'PUT',
+            });
+        },
+        SkipToNext: async (deviceId) => {
+            return fetchSpotifyAPI({
+                url: appendArgs('https://api.spotify.com/v1/me/player/next', {
+                    'device_id': deviceId,
+                }),
+                method: 'POST',
+            });
+        },
+        SkipToPrevious: async (deviceId) => {
+            return fetchSpotifyAPI({
+                url: appendArgs('https://api.spotify.com/v1/me/player/previous', {
+                    'device_id': deviceId,
+                }),
+                method: 'POST',
+            });
+        },
+        SeekToPosition: async (position, deviceId) => {
+            return fetchSpotifyAPI({
+                url: appendArgs('https://api.spotify.com/v1/me/player/seek', {
+                    'position_ms': position,
+                    'device_id': deviceId,
+                }),
+                method: 'PUT',
+            });
+        },
+        SetRepeatMode: async (repeatMode, deviceId) => {
+            return fetchSpotifyAPI({
+                url: appendArgs('https://api.spotify.com/v1/me/player/repeat', {
+                    state: repeatMode,
+                    'device_id': deviceId,
+                }),
+                method: 'PUT',
+            });
+        },
+        SetPlaybackVolume: async (volume, deviceId) => {
+            return fetchSpotifyAPI({
+                url: appendArgs('https://api.spotify.com/v1/me/player/volume', {
+                    'volume_percent': volume ?? 0,
+                    'device_id': deviceId,
+                }),
+                method: 'PUT',
+            });
+        },
+        TogglePlaybackShuffle: async (shuffle, deviceId) => {
+            return fetchSpotifyAPI({
+                url: appendArgs('https://api.spotify.com/v1/me/player/shuffle', {
+                    state: shuffle,
+                    'device_id': deviceId,
+                }),
+                method: 'PUT',
+            });
+        },
+    },
+});

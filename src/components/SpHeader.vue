@@ -2,9 +2,9 @@
 import {computed, ref} from "vue";
 import {useRouter} from "vue-router";
 
-import IconBtn from "./IconBtn.vue";
+import IconBtn from "./btn/IconBtn.vue";
 import {useQuasar} from "quasar";
-import NavControl from "./NavControl.vue";
+import NavControl from "./control/NavControl.vue";
 
 const $q = useQuasar();
 const screen = $q.screen;

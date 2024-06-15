@@ -9,11 +9,11 @@ import SongPreview from "./SongPreview.vue";
 import ProgressBar from "./ProgressBar.vue";
 
 import ChangeStrategy from "../model/ChangeStrategy.js";
-import IconBtn from "./IconBtn.vue";
-import DeviceBtn from "./DeviceBtn.vue";
-import VolumeControl from "./VolumeControl.vue";
+import IconBtn from "./btn/IconBtn.vue";
+import DeviceBtn from "./btn/DeviceBtn.vue";
+import VolumeControl from "./control/VolumeControl.vue";
 import SpRepeatMode from "../model/SpRepeatMode.js";
-import RepeatControl from "./RepeatControl.vue";
+import RepeatControl from "./control/RepeatControl.vue";
 
 const player = useSpotifyPlayer();
 const activeDevice = useActiveDevice();

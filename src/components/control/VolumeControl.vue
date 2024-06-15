@@ -1,10 +1,10 @@
 <script setup>
 
-import {useSpotifyPlayer} from "../composables/useSpotifyAPI.js";
-import ProgressBar from "./ProgressBar.vue";
+import {useSpotifyPlayer} from "../../composables/useSpotifyAPI.js";
+import ProgressBar from "../ProgressBar.vue";
 import {computed, ref} from "vue";
-import ChangeStrategy from "../model/ChangeStrategy.js";
-import IconBtn from "./IconBtn.vue";
+import ChangeStrategy from "../../model/ChangeStrategy.js";
+import IconBtn from "../btn/IconBtn.vue";
 
 const player = useSpotifyPlayer();
 

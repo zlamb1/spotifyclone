@@ -1,10 +1,10 @@
 <script setup>
 
-import {useSpotifyPlayer} from "../composables/useSpotifyAPI.js";
+import {useSpotifyPlayer} from "../../composables/useSpotifyAPI.js";
 
-import IconBtn from "./IconBtn.vue";
+import IconBtn from "../btn/IconBtn.vue";
 
-import SpRepeatMode from "../model/SpRepeatMode.js";
+import SpRepeatMode from "../../model/SpRepeatMode.js";
 
 const player = useSpotifyPlayer();
 

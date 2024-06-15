@@ -4,7 +4,7 @@ import {onMounted, onUnmounted, ref} from "vue";
 
 import SpSong from "../model/SpSong.js";
 
-import IconBtn from "./IconBtn.vue";
+import IconBtn from "./btn/IconBtn.vue";
 import SongThumbnail from "./SongThumbnail.vue";
 
 const props = defineProps({

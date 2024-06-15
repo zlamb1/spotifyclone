@@ -1,6 +1,6 @@
 <script setup>
 
-import IconBtn from "./IconBtn.vue";
+import IconBtn from "../btn/IconBtn.vue";
 import {useRoute} from "vue-router";
 import {computed} from "vue";
 
