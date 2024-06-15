@@ -90,8 +90,8 @@ const nonCriticalPollRate = 15 * 1000;
 // solution to continue tracking elapsed time
 const trackInterval = 250;
 setInterval(() => {
-    if (player.value.playing) {
-        player.value.elapsed += trackInterval;
+    if (player.value.playing && player.value.currentlyPlaying && player.elapsed <= player.value.currentlyPlaying.duration) {
+        player.value.elapsed = Math.min(player.value.elapsed + trackInterval, player.value.currentlyPlaying.duration);
     }
 }, trackInterval);
 
