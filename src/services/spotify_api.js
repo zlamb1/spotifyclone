@@ -1,6 +1,6 @@
 import { SessionStorage } from 'quasar'
 
-const clientId = 'ddd4d7be0ba74f13bd9f8e4e9912e834';
+const clientId = '00f1b2d78e0c482c95743608061e35d3';
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
 
@@ -129,7 +129,10 @@ export async function fetchSpotifyAPI(request) {
     if (request.url) {
         const requestInit = {
             method: request.method ?? 'GET',
-            headers: { Authorization: `Bearer ${accessToken}` },
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Access-Control-Request-Headers': 'Retry-After',
+            },
             body: request.body ?? undefined,
         }
 
@@ -140,6 +143,10 @@ export async function fetchSpotifyAPI(request) {
             await refreshTokens(clientId);
             // make one more attempt
             return await fetch(request.url, requestInit);
+        }
+
+        if (result.status === 429) {
+            console.log(result.headers)
         }
 
         return result;

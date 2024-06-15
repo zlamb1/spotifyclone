@@ -20,10 +20,10 @@ const $q = useQuasar();
 const screen = $q.screen;
 
 const computedPlayIcon = computed((() => {
-  if (player.value.paused) {
-    return 'play_arrow';
-  } else {
+  if (player.value.playing) {
     return 'pause';
+  } else {
+    return 'play_arrow';
   }
 }));
 
@@ -40,14 +40,14 @@ const formatDuration = (duration) => {
   <q-footer>
     <div class="row justify-center q-py-sm q-px-md">
       <div class="col-4" v-show="screen.gt.xs">
-        <SongPreview :song="player.currentTrack" v-if="player?.currentTrack" />
+        <SongPreview :song="player.currentlyPlaying" v-if="player?.currentlyPlaying" />
       </div>
       <div class="column col-10 col-sm-4 col-md full-height justify-center">
         <div class="row justify-center relative-position q-mb-sm q-gutter-x-sm">
           <IconBtn icon="shuffle" dense />
-          <IconBtn icon="skip_previous" icon-size="md" dense @click="player.previousTrack()" />
+          <IconBtn icon="skip_previous" icon-size="md" dense @click="player.prev()" />
           <IconBtn :icon="computedPlayIcon" color="secondary" icon-color="dark" icon-size="md" round push @click="player.togglePlayer()" />
-          <IconBtn icon="skip_next" icon-size="md" dense @click="player.skipTrack()" />
+          <IconBtn icon="skip_next" icon-size="md" dense @click="player.skip()" />
           <IconBtn icon="repeat" dense />
           <DeviceBtn class="absolute-right" v-show="screen.lt.sm" />
         </div>
@@ -56,8 +56,8 @@ const formatDuration = (duration) => {
           <ProgressBar :progress="player.getElapsedAsPercent()" @update="(newProgress) => player.setElapsedAsPercent(newProgress)"
                        style="width: 100%" :change-strategy="ChangeStrategy.Release"
                        color="accent-two" track-color="secondary" hover-track-color="primary"
-                       knob-color="secondary" :debounce-duration="50" :disabled="!player.currentTrack" />
-          <span class="non-selectable text-accent-two">{{formatDuration(player?.currentTrack?.duration)}}</span>
+                       knob-color="secondary" :debounce-duration="50" :disabled="!player.currentlyPlaying" />
+          <span class="non-selectable text-accent-two">{{formatDuration(player?.currentlyPlaying?.duration)}}</span>
         </div>
       </div>
       <div class="col-4 row items-center" v-show="screen.gt.xs">

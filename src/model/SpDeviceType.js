@@ -6,11 +6,11 @@ const SpDeviceType = Object.freeze({
 
     FromSpotifyAPI: (type) => {
         switch (type) {
-            case 'computer':
+            case 'Computer':
                 return SpDeviceType.Computer;
-            case 'smartphone':
+            case 'Smartphone':
                 return SpDeviceType.Phone;
-            case 'speaker':
+            case 'Speaker':
                 return SpDeviceType.Speaker;
             default:
                 return SpDeviceType.Unknown;

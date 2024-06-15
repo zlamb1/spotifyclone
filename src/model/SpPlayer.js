@@ -1,19 +1,31 @@
 // wrapper class for Spotify.Player from Spotify Web Playback SDK
 
+import SpRepeatMode from "./SpRepeatMode.js";
+import {
+    spotifySeekToPosition, spotifySetVolume,
+    spotifySkipToNext, spotifySkipToPrevious,
+    spotifyTogglePlayback
+} from "../composables/useSpotifyAPI.js";
+
 export default class SpPlayer {
     constructor() {
         this.ready = false;
         this.id = 0;
         this.playerAPI = null;
 
+        this.useWebAPI = false;
+
         this.active = false;
         this.volume = 0.5;
-        this.name = 'Custom Client';
-        this.paused = false;
+        this.name = 'SpotifyLite';
+        this.playing = false;
         this.elapsed = 0;
-        this.currentTrack = null;
+        this.currentlyPlaying = null;
         this.shuffle = false;
-        this.repeatMode = 0;
+        this.repeatMode = SpRepeatMode.Off;
+
+        this.debouncingDuration = 0;
+        this.debouncedProps = {};
 
         this.connect = async function() {
             if (this.playerAPI) {
@@ -37,6 +49,7 @@ export default class SpPlayer {
 
         this.setName = async function(name) {
             this.name = name;
+            this.debounceProp('name');
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -50,6 +63,8 @@ export default class SpPlayer {
 
         this.setVolume = async function(volume) {
             this.volume = volume;
+            this.debounceProp('volume');
+            if (this.useWebAPI) return spotifySetVolume(Math.floor(volume.toFixed(2) * 100));
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -62,6 +77,8 @@ export default class SpPlayer {
         }
 
         this.pause = async function() {
+            this.playing = false;
+            this.debounceProp('playing');
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -74,6 +91,8 @@ export default class SpPlayer {
         }
 
         this.resume = async function() {
+            this.playing = true;
+            this.debounceProp('playing');
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -86,7 +105,9 @@ export default class SpPlayer {
         }
 
         this.togglePlayer = async function() {
-            this.paused = !this.paused;
+            this.playing = !this.playing;
+            this.debounceProp('playing');
+            if (this.useWebAPI) return spotifyTogglePlayback(this.playing);
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -100,6 +121,8 @@ export default class SpPlayer {
 
         this.seek = async function(position) {
             this.elapsed = position;
+            this.debounceProp('elapsed')
+            if (this.useWebAPI) return spotifySeekToPosition(Math.floor(position));
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -111,7 +134,9 @@ export default class SpPlayer {
             }
         }
 
-        this.skipTrack = async function() {
+        this.skip = async function() {
+            // does not need to be debounced
+            if (this.useWebAPI) return spotifySkipToNext();
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -123,7 +148,9 @@ export default class SpPlayer {
             }
         }
 
-        this.previousTrack = async function() {
+        this.prev = async function() {
+            // does not need to be debounced
+            if (this.useWebAPI) return spotifySkipToPrevious();
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -137,8 +164,8 @@ export default class SpPlayer {
 
         this.setElapsedAsPercent = async function(percentage) {
             percentage = percentage ?? 0;
-            if (this.currentTrack) {
-                const duration = this.currentTrack.duration;
+            if (this.currentlyPlaying) {
+                const duration = this.currentlyPlaying.duration;
                 // sanity-check percentage so that it is in range [0.0 - 1.0]
                 // then seek to the new position
                 this.elapsed = duration * Math.max(Math.min(percentage, 1), 0);
@@ -147,16 +174,33 @@ export default class SpPlayer {
         }
 
         this.getElapsedAsPercent = function() {
-            if (!this.ready || !this.currentTrack) {
+            if (!this.ready || !this.currentlyPlaying) {
                 return 0;
             }
 
-            const duration = this.currentTrack.duration;
+            const duration = this.currentlyPlaying.duration;
             return this.elapsed / duration;
         }
 
-        function ConsoleWarn(func_name) {
-            console.warn(`[SpotifyService]: Function ${func_name} called on SpotifyPlayer with no valid Spotify API.`);
+        this.isDebounced = (propName) => {
+            return !!this.debouncedProps[propName];
+        }
+
+        this.debounceProp = (propName) => {
+            // used to minimize desync between clients while using the Web API
+            if (this.useWebAPI) {
+                if (this.debouncedProps[propName]) {
+                    clearTimeout(this.debouncedProps[propName]);
+                }
+                this.debouncedProps[propName] = setTimeout(() => {
+                    this.debouncedProps[propName] = undefined;
+                }, this.debouncingDuration);
+                return true;
+            }
+        }
+
+        function ConsoleWarn(funcName) {
+            console.warn(`[SpotifyService]: Function ${funcName} called on SpotifyPlayer with no valid Spotify API.`);
         }
 
         function ConsoleWarnNotReady() {

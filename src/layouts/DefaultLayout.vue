@@ -5,7 +5,7 @@ import SpFooter from "../components/SpFooter.vue";
 
 <template>
   <q-layout class="bg-dark" view="hHh lpR fFf">
-    <SpHeader class="transparent q-pa-sm" />
+    <SpHeader class="transparent q-px-md q-py-sm" />
     <SpFooter class="bg-dark" />
     <q-page-container>
       <q-page>
