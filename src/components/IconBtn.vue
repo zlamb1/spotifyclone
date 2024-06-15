@@ -18,6 +18,8 @@ const props = defineProps({
 
 <template>
   <q-btn>
-    <q-icon :name="icon" :color="iconColor" :size="iconSize" />
+    <q-icon :name="icon" :color="iconColor" :size="iconSize">
+      <slot />
+    </q-icon>
   </q-btn>
 </template>

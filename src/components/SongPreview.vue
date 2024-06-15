@@ -19,36 +19,22 @@ defineProps({
 
 const isHovering = ref(false);
 
-const nameContainer = ref(null);
-const pauseNameScroll = ref(false);
-
-const artistsContainer = ref(null);
-const pauseArtistsScroll = ref(false);
+const scrollContainer = ref(null);
+const pauseScroll = ref(false);
 
 const scrollSpeed = 2;
 
 const refresh = () => {
-  const $nameEl = nameContainer.value;
-  const $artistsEl = artistsContainer.value;
-
-  if ($nameEl) {
-    if (!pauseNameScroll.value) {
-      $nameEl.scrollBy(scrollSpeed * (isHovering.value ? 1 : -1), 0);
-    }
-  }
-
-  if ($artistsEl) {
-    if (!pauseArtistsScroll.value) {
-      $artistsEl.scrollBy(scrollSpeed * (isHovering.value ? 1 : -1), 0);
-    }
+  const $el = scrollContainer.value;
+  if ($el && pauseScroll.value) {
+    $el.scrollBy(scrollSpeed * (isHovering.value ? 1 : -1), 0);
   }
 }
 
 const onMouseOver = (event) => {
   isHovering.value = true;
   if (event?.target) {
-    pauseNameScroll.value = event.target?.classList?.contains('name-link');
-    pauseArtistsScroll.value = event.target?.classList?.contains('artist-link');
+    pauseScroll.value = !event.target?.classList?.contains('link');
   }
 }
 
@@ -68,24 +54,25 @@ onUnmounted(() => {
 <template>
   <div class="row items-center">
     <SongThumbnail style="width: 60px; height: 60px" :url="song.retrieveFirstImage()" />
-    <div class="column q-pa-md" @mouseover="onMouseOver" @mouseleave="isHovering = false">
-      <div class="song-scroller" :style="`max-width: ${maxWidth}px`" ref="nameContainer">
-        <div class="full-height bg-red" />
-        <RouterLink class="text-secondary link name-link" active-class="underline" :to="{name: 'track', params: { id: '0' }}">
-          {{song.name}}
-        </RouterLink>
-      </div>
-      <div class="song-scroller row no-wrap" :style="`max-width: ${maxWidth}px`" ref="artistsContainer">
-        <div v-for="(artist, index) in song.artists" :key="index">
-          <RouterLink class="text-accent-two link artist-link" :to="{name: 'artist', params: { id: 0 }}">
-            {{artist.name}}
+    <div class="row col q-pa-md q-gutter-x-sm" @mouseover="onMouseOver" @mouseleave="isHovering = false">
+      <div class="column song-scroller" ref="scrollContainer">
+        <div>
+          <RouterLink class="text-secondary link" active-class="underline" :to="{name: 'track', params: { id: '0' }}">
+            {{song.name}}
           </RouterLink>
-          <span class="text-accent-two non-selectable" v-show="index !== song.artists.length - 1">,</span>
+        </div>
+        <div class="row no-wrap">
+          <div v-for="(artist, index) in song.artists" :key="index">
+            <RouterLink class="text-accent-two link" :to="{name: 'artist', params: { id: 0 }}">
+              {{artist.name}}
+            </RouterLink>
+            <span class="text-accent-two non-selectable" v-show="index !== song.artists.length - 1">,</span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="flex flex-center">
-      <IconBtn color="primary" icon-color="dark" icon="check" size="6px" icon-size="12px" round />
+      <div class="flex flex-center">
+        <IconBtn color="primary" icon-color="dark" icon="check" size="6px" icon-size="12px" round />
+      </div>
     </div>
   </div>
 </template>

@@ -44,12 +44,13 @@ const formatDuration = (duration) => {
       </div>
       <div class="column col-10 col-sm-4 col-md full-height justify-center">
         <div class="row justify-center relative-position q-mb-sm q-gutter-x-sm">
+          <DeviceBtn class="absolute-left" v-show="screen.lt.sm" />
           <IconBtn icon="shuffle" dense />
           <IconBtn icon="skip_previous" icon-size="md" dense @click="player.prev()" />
           <IconBtn :icon="computedPlayIcon" color="secondary" icon-color="dark" icon-size="md" round push @click="player.togglePlayer()" />
           <IconBtn icon="skip_next" icon-size="md" dense @click="player.skip()" />
           <IconBtn icon="repeat" dense />
-          <DeviceBtn class="absolute-right" v-show="screen.lt.sm" />
+          <VolumeControl class="absolute-right" collapsed v-show="screen.lt.sm" />
         </div>
         <div class="row no-wrap q-gutter-x-sm">
           <span class="non-selectable text-accent-two">{{formatDuration(player?.elapsed)}}</span>
