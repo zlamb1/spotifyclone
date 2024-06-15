@@ -63,7 +63,7 @@ const emit = defineEmits(["update"]);
 const trackedProgress = ref(0);
 
 const isDebouncing = ref(false);
-const isGrabbing = ref(false);
+const isDragging = ref(false);
 const isHovering = ref(false);
 
 const barRef = ref(null);
@@ -104,20 +104,32 @@ const calculateChange = (mouseX, lastChange) => {
   }
 }
 
-const onGrab = (event) => {
+const onMouseDown = (event) => {
   if (!props.disabled && event.button === 0) {
-    isGrabbing.value = true;
+    isDragging.value = true;
   }
 }
 
-const onMove = (event) => {
-  if (isGrabbing.value) {
+const onMouseMove = (event) => {
+  if (isDragging.value) {
     calculateChange(event.clientX);
   }
 }
 
-const onRelease = (event) => {
-  if (isGrabbing.value) {
+const onTouchStart = () => {
+  if (!props.disabled) {
+    isDragging.value = true;
+  }
+}
+
+const onTouchMove = (event) => {
+  if (isDragging.value && event?.touches?.length > 0) {
+    calculateChange(event.touches[0].clientX);
+  }
+}
+
+const onTouchEnd = (event) => {
+  if (isDragging.value && event?.touches?.length > 0) {
     if (props.changeStrategy === ChangeStrategy.Release && props.debounceDuration > 0) {
       isDebouncing.value = true;
       setTimeout(() => {
@@ -126,20 +138,35 @@ const onRelease = (event) => {
         trackedProgress.value = props.progress;
       }, props.debounceDuration);
     }
-    isGrabbing.value = false;
+    isDragging.value = false;
+    calculateChange(event.touches[0].clientX, true);
+  }
+}
+
+const onMouseUp = (event) => {
+  if (isDragging.value) {
+    if (props.changeStrategy === ChangeStrategy.Release && props.debounceDuration > 0) {
+      isDebouncing.value = true;
+      setTimeout(() => {
+        isDebouncing.value = false;
+        // reset state of trackedProgress
+        trackedProgress.value = props.progress;
+      }, props.debounceDuration);
+    }
+    isDragging.value = false;
     calculateChange(event.clientX, true);
   }
 }
 
 onMounted(() => {
   trackedProgress.value = props.progress;
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup', onRelease);
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('mousemove', onMove);
-  document.removeEventListener('mouseup', onRelease);
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
 });
 
 watch(() => props.changeStrategy, (newStrategy) => {
@@ -149,7 +176,7 @@ watch(() => props.changeStrategy, (newStrategy) => {
 });
 
 watch(() => props.progress, (newProgess) => {
-  if (props.changeStrategy === ChangeStrategy.Release && !isGrabbing.value && !isDebouncing.value) {
+  if (props.changeStrategy === ChangeStrategy.Release && !isDragging.value && !isDebouncing.value) {
     trackedProgress.value = newProgess;
   }
 });
@@ -157,7 +184,7 @@ watch(() => props.progress, (newProgess) => {
 </script>
 
 <template>
-  <div class="outer q-py-sm" @mousedown="onGrab"  @touchstart="onGrab" @touchmove="onMove" @touchend="onRelease"
+  <div class="outer q-py-sm" @mousedown="onMouseDown"  @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd"
        draggable="false" :disabled="disabled ? 'true' : undefined"
        @mouseover="isHovering = true" @mouseleave="isHovering = false">
     <div class="s-progress-bar" :class="`bg-${computedHovering && hoverColor ? hoverColor : color}`"
