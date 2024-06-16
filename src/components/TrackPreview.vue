@@ -2,14 +2,14 @@
 
 import {onMounted, onUnmounted, ref} from "vue";
 
-import SpSong from "../model/SpSong.js";
+import SpTrack from "../model/SpTrack.js";
 
 import IconBtn from "./btn/IconBtn.vue";
-import SongThumbnail from "./SongThumbnail.vue";
+import SongThumbnail from "./thumbnail/TrackThumbnail.vue";
 
 const props = defineProps({
   song: {
-    type: SpSong,
+    type: SpTrack,
   },
   maxWidth: {
     type: Number,

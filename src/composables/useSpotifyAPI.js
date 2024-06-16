@@ -1,7 +1,8 @@
-import {computed} from "vue";
-
 import { fetchSpotifyAPI } from "../services/spotify_api.js";
-import { player, activeDevice, spDevices } from '../services/spotify_service.js'
+import { player, spDevices, activeDevice, activePlaylist } from '../services/spotify_service.js'
+import SpCategory from "../model/SpCategory.js";
+import SpPlaylist from "../model/SpPlaylist.js";
+import {onMounted, onUnmounted, ref, watch} from "vue";
 
 export function useSpotifyPlayer() {
     return player;
@@ -15,13 +16,47 @@ export function useActiveDevice() {
     return activeDevice;
 }
 
-function appendIf(target, postfix, value) {
-    if (value) {
-        return target + postfix;
-    } else {
-        return target;
-    }
+function useRefresh(refreshFunc, refreshInterval) {
+    let clearId;
+    onMounted(() => {
+        clearId = setInterval(refreshFunc, refreshInterval);
+    });
+    onUnmounted(() => {
+       clearInterval(clearId);
+       clearId = undefined;
+    });
+    refreshFunc();
 }
+
+export function usePlaylist(url) {
+    const playlist = ref(null);
+    const onRefresh = async () => {
+        if (!url.value) {
+            playlist.value = null;
+            return;
+        }
+        playlist.value = await SpotifyWebAPI.Playlists.GetPlaylist(url.value);
+    }
+    watch(url, async () => {
+        await onRefresh();
+    });
+    useRefresh(onRefresh, 15 * 1000);
+    return playlist;
+}
+
+export function useActivePlaylist() {
+    return usePlaylist(activePlaylist);
+}
+
+export function useOwnerPlaylists() {
+    const playlists = ref([]);
+    useRefresh(async () => {
+        playlists.value = await SpotifyWebAPI.Playlists.GetOwnerPlaylists(50, 0);
+    }, 15 * 1000);
+    return playlists;
+}
+
+// utility functions
 
 function appendArgs(url, args) {
     let appended = url + '?';
@@ -38,7 +73,36 @@ function appendArgs(url, args) {
 
 // API Calls
 
+const tryParseResponse = async (res) => {
+    if (!res) return;
+    if (res.ok) {
+        try {
+            return await res.json();
+        } catch (err) {
+            console.warn('[SpotifyWebAPI]: Error occured while parsing response JSON: ', err);
+        }
+    }
+}
+
 export const SpotifyWebAPI = Object.freeze({
+    Categories: {
+        GetBrowseCategory: async (categoryId) => {
+            const response = await fetchSpotifyAPI({
+                url: `https://api.spotify.com/v1/browse/categories/${categoryId}`
+            });
+
+            const json = await tryParseResponse(response);
+            if (json) return new SpCategory(json);
+        },
+        GetBrowseCategories: async (limit, offset) => {
+            const response = await fetchSpotifyAPI({
+                url: `https://api.spotify.com/v1/browse/categories?offset=${offset}&limit=${limit}`
+            });
+
+            const json = await tryParseResponse(response);
+            if (json) return json?.categories?.items?.map((cat) => new SpCategory(cat));
+        },
+    },
     Player: {
         TransferPlayback: async (deviceId, play) => {
             return fetchSpotifyAPI({
@@ -110,5 +174,26 @@ export const SpotifyWebAPI = Object.freeze({
                 method: 'PUT',
             });
         },
+    },
+    Playlists: {
+        GetPlaylist: async (playlistId) => {
+            const res = await fetchSpotifyAPI({
+                url: `https://api.spotify.com/v1/playlists/${playlistId}`,
+            });
+
+            const json = await tryParseResponse(res);
+            if (json) return new SpPlaylist(json);
+        },
+        GetOwnerPlaylists: async (limit, offset) => {
+            const res = await fetchSpotifyAPI({
+                url: appendArgs('https://api.spotify.com/v1/me/playlists', {
+                    limit: limit,
+                    offset: offset,
+                }),
+            });
+
+            const json = await tryParseResponse(res);
+            if (json) return json?.items?.map((playlist) => new SpPlaylist(playlist));
+        }
     },
 });

@@ -2,15 +2,18 @@ import {accessToken, fetchSpotifyAPI} from "./spotify_api.js";
 import {ref} from "vue";
 
 import SpPlayer from "../model/SpPlayer.js";
-import SpSong from "../model/SpSong.js";
 import SpDevice from "../model/SpDevice.js";
 import SpRepeatMode from "../model/SpRepeatMode.js";
 import SpType from "../model/SpType.js";
-import SpTrack from "../model/SpSong.js";
+import SpTrack from "../model/SpTrack.js";
 
 const player = ref(new SpPlayer());
-const activeDevice = ref(null);
 const spDevices = ref([]);
+
+const activeDevice = ref(null);
+const activePlaylist = ref(null);
+
+const onReady = [];
 
 /**
  * @param player SpPlayer
@@ -21,7 +24,7 @@ const setState = (player, state) => {
     if (!player.value.isDebounced('elapsed')) player.value.elapsed = state.position;
     // does this factor in other types (i.e. Episode)
     // TODO: consider other types
-    player.value.currentTime = SpSong.FromSpotifyAPI(state.track_window.current_track);
+    player.value.currentTime = SpTrack.FromSpotifyAPI(state.track_window.current_track);
     if (!player.value.isDebounced('shuffle')) player.value.shuffle = state.shuffle;
     if (!player.value.isDebounced('repeatMode')) player.value.repeatMode = SpRepeatMode.FromSpotifyAPI(state.repeat_mode);
 }
@@ -60,6 +63,13 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             });
             spDevices.value.push(playerDevice);
         }
+
+        // notify callbacks
+        onReady.forEach((callback) => {
+            if (typeof callback === 'function') {
+                callback();
+            }
+        });
     });
 
     player.value.playerAPI.addListener('not_ready', ({device_id}) => {
@@ -84,6 +94,8 @@ async function queryPlayerState() {
         url: 'https://api.spotify.com/v1/me/player',
     });
 
+    if (!result) return;
+
     if (result.status === 204) {
         // no state
         activeDevice.value = null;
@@ -93,7 +105,7 @@ async function queryPlayerState() {
 
     if (result.ok) {
         try {
-            const { device, repeat_state, shuffle_state, progress_ms, is_playing, item, currently_playing_type } = await result.json();
+            const { device, repeat_state, shuffle_state, context, progress_ms, is_playing, item, currently_playing_type } = await result.json();
 
             activeDevice.value = SpDevice.FromSpotifyAPI(device);
             if (device) {
@@ -115,6 +127,11 @@ async function queryPlayerState() {
                 }
             }
 
+            if (context && context?.type === 'playlist') {
+                // set active playlist to id of current context href
+                activePlaylist.value = context.href.substring(context.href.lastIndexOf('/') + 1);
+            }
+
             // prevent state from desyncing
             if (!player.value.isDebounced('playing')) player.value.playing = is_playing;
             if (!player.value.isDebounced('elapsed')) player.value.elapsed = progress_ms;
@@ -123,7 +140,7 @@ async function queryPlayerState() {
 
             const type = SpType.FromSpotifyAPI(currently_playing_type);
             if (type === SpType.Track) {
-                player.value.currentlyPlaying = SpTrack.FromSpotifyAPI(item);
+                player.value.currentlyPlaying = new SpTrack(item);
             }
         } catch (err) {
             console.warn('[SpotifyService]: Failed to parse player state JSON: ', err);
@@ -171,4 +188,4 @@ setInterval( async () => {
     await queryPlayerState();
 }, criticalPollRate);
 
-export { player, activeDevice, spDevices, queryPlayerState };
+export { player, spDevices, activeDevice, activePlaylist, onReady, queryPlayerState };

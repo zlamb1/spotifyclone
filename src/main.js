@@ -19,13 +19,16 @@ import '@quasar/extras/material-symbols-outlined/material-symbols-outlined.css';
 import 'quasar/src/css/index.sass';
 
 // Create router
-import HomePage from "./pages/HomePage.vue";
 import {createRouter, createWebHistory} from "vue-router";
+
+import HomePage from "./pages/HomePage.vue";
 import BrowsePage from "./pages/BrowsePage.vue";
+import PlaylistPage from "./pages/PlaylistPage.vue";
 
 const routes = [
     { path: '/', component: HomePage },
     { path: '/browse', component: BrowsePage },
+    { path: '/playlist/:id', component: PlaylistPage },
     { path: '/track/:id', name: 'track', component: HomePage },
     { path: '/artist/:id', name: 'artist', component: HomePage },
 ];

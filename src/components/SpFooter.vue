@@ -5,7 +5,7 @@ import {computed} from "vue";
 import {useQuasar} from "quasar";
 import {useActiveDevice, useSpotifyPlayer} from "../composables/useSpotifyAPI.js";
 
-import SongPreview from "./SongPreview.vue";
+import SongPreview from "./TrackPreview.vue";
 import ProgressBar from "./ProgressBar.vue";
 
 import ChangeStrategy from "../model/ChangeStrategy.js";

@@ -1,6 +1,6 @@
 import { SessionStorage } from 'quasar'
 
-const clientId = '00f1b2d78e0c482c95743608061e35d3';
+const clientId = '13bfdac0ac4a4cbca6cd3bf2c620c93d';
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
 
@@ -10,7 +10,8 @@ const redirectUri = location.protocol + '//' + location.host + location.pathname
 // config
 const scopes = 'user-read-private user-read-email ' +
     'user-read-playback-state user-modify-playback-state user-read-currently-playing ' +
-    'app-remote-control streaming ';
+    'app-remote-control streaming ' +
+    'playlist-read-private playlist-read-collaborative';
 
 let accessToken = undefined;
 
@@ -120,7 +121,7 @@ async function generateCodeChallenge(codeVerifier) {
         .replace(/=+$/, '');
 }
 
-const rateLimitTimeout = 60 * 1000;
+const rateLimitTimeout = 60 * 60 * 1000;
 let rateLimited = false;
 
 export async function fetchSpotifyAPI(request) {
@@ -131,6 +132,7 @@ export async function fetchSpotifyAPI(request) {
 
     if (rateLimited) {
         console.warn(`[SpotifyAPI]: Cannot make API calls due to rate limiting. Please wait.`);
+        return;
     }
 
     if (request.url) {
