@@ -31,6 +31,7 @@ const routes = [
     { path: '/playlist/:id', component: PlaylistPage },
     { path: '/track/:id', name: 'track', component: HomePage },
     { path: '/artist/:id', name: 'artist', component: HomePage },
+    { path: '/album/:id', name: 'album', component: HomePage }
 ];
 
 const router = createRouter({

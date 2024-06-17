@@ -1,30 +1,26 @@
 <script setup>
 
-import {computed} from "vue";
+import {ref} from "vue";
 
 const props = defineProps({
-  textColor: {
+  class: {
     type: String,
-    default: 'accent-two',
   },
-  activeColor: {
+  activeClass: {
     type: String,
-    default: 'secondary',
   },
-  usePointer: {
-    type: Boolean,
-    default: false,
+  pointer: {
+    type: String,
   }
 });
 
-const computedColor = computed(() => {
-  return props.textColor;
-});
+const isHovering = ref(false);
 
 </script>
 
 <template>
-  <div :class="usePointer ? 'cursor-pointer' : ''" :style="`color: ${computedColor}}`">
+  <div class="non-selectable" :class="`${isHovering ? activeClass : props.class} ${pointer ? `cursor-${pointer}` : ''}`" style="cursor: default"
+       @mouseenter="isHovering = true" @mouseleave="isHovering = false">
     <slot />
   </div>
 </template>

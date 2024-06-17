@@ -1,4 +1,5 @@
 import SpTrack from "./SpTrack.js";
+import SpItem from "./SpItem.js";
 
 export default class SpPlaylist {
     constructor(data) {
@@ -8,11 +9,13 @@ export default class SpPlaylist {
         this.owner = data.owner;
         this.public = data.public;
 
-        this.tracks = data?.tracks?.items?.map((item) => new SpTrack(item.track));
+        this.tracks = data?.tracks?.items?.map((item) => new SpTrack(new SpItem(item), item.track));
 
         this.getDuration = () => {
+            if (!this.tracks) return '';
+
             let duration = 0;
-            for (const track of this.tracks) {
+            for (const track of this?.tracks) {
                 duration += track?.duration;
             }
 

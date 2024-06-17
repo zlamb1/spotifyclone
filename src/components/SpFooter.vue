@@ -14,6 +14,7 @@ import DeviceBtn from "./btn/DeviceBtn.vue";
 import VolumeControl from "./control/VolumeControl.vue";
 import SpRepeatMode from "../model/SpRepeatMode.js";
 import RepeatControl from "./control/RepeatControl.vue";
+import TrackPreview from "./TrackPreview.vue";
 
 const player = useSpotifyPlayer();
 const activeDevice = useActiveDevice();
@@ -42,7 +43,7 @@ const formatDuration = (duration) => {
   <q-footer>
     <div class="row justify-center q-py-sm q-px-md">
       <div class="col-4" v-show="screen.gt.xs">
-        <SongPreview :song="player.currentlyPlaying" v-if="player?.currentlyPlaying" />
+        <TrackPreview :track="player.currentlyPlaying" v-if="player?.currentlyPlaying" />
       </div>
       <div class="column col-10 col-sm-4 col-md full-height justify-center">
         <div class="row justify-center relative-position q-mb-sm q-gutter-x-sm">
@@ -81,12 +82,3 @@ const formatDuration = (duration) => {
     </transition>
   </q-footer>
 </template>
-
-<style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-}
-</style>

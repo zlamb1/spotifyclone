@@ -28,4 +28,11 @@ body.body--dark .shadow-4 {
 body.body--dark .shadow-5 {
   box-shadow: 0 3px 5px -1px var(--shadow-color), 0 5px 8px var(--shadow-color), 0 1px 14px var(--shadow-color) !important;
 }
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
 </style>

@@ -5,15 +5,19 @@ import {onMounted, onUnmounted, ref} from "vue";
 import SpTrack from "../model/SpTrack.js";
 
 import IconBtn from "./btn/IconBtn.vue";
-import SongThumbnail from "./thumbnail/TrackThumbnail.vue";
+import TrackThumbnail from "./thumbnail/TrackThumbnail.vue";
 
 const props = defineProps({
-  song: {
+  track: {
     type: SpTrack,
   },
   maxWidth: {
     type: Number,
     default: 150,
+  },
+  showAddToPlaylist: {
+    type: Boolean,
+    default: true,
   },
 });
 
@@ -52,24 +56,24 @@ onUnmounted(() => {
 
 <template>
   <div class="row items-center">
-    <SongThumbnail style="width: 60px; height: 60px" :url="song.retrieveFirstImage()" />
+    <TrackThumbnail style="width: 60px; height: 60px" :track="track" />
     <div class="row col q-pa-md q-gutter-x-sm" @mouseover="onMouseOver" @mouseleave="isHovering = false">
       <div class="column song-scroller" ref="scrollContainer">
         <div>
-          <RouterLink class="text-secondary link" active-class="underline" :to="{name: 'track', params: { id: song.id }}">
-            {{song.name}}
+          <RouterLink class="text-secondary link" active-class="underline" :to="{name: 'track', params: { id: track?.id }}">
+            {{track?.name}}
           </RouterLink>
         </div>
         <div class="row no-wrap">
-          <div v-for="(artist, index) in song.artists" :key="index">
+          <div v-for="(artist, index) in track?.artists" :key="index">
             <RouterLink class="text-accent-two link" :to="{name: 'artist', params: { id: artist.id }}">
               {{artist.name}}
             </RouterLink>
-            <span class="text-accent-two non-selectable" v-show="index !== song.artists.length - 1">,</span>
+            <span class="text-accent-two non-selectable q-mr-xs" v-show="index !== track?.artists?.length - 1">,</span>
           </div>
         </div>
       </div>
-      <div class="flex flex-center">
+      <div class="flex flex-center" v-show="showAddToPlaylist">
         <IconBtn color="primary" icon-color="dark" icon="check" size="6px" icon-size="12px" round />
       </div>
     </div>

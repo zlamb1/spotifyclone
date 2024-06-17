@@ -11,7 +11,7 @@ export default class SpPlayer {
         this.id = 0;
         this.playerAPI = null;
 
-        this.useWebAPI = false;
+        this.preferWebAPI = false;
 
         this.active = false;
         this.volume = 0.5;
@@ -62,7 +62,7 @@ export default class SpPlayer {
         this.setVolume = async function(volume) {
             this.volume = volume;
             this.debounceProp('volume');
-            if (this.useWebAPI) return this.callWebAPI(() => SpotifyWebAPI.Player.SetPlaybackVolume(Math.floor(volume.toFixed(2) * 100)));
+            if (this.preferWebAPI) return this.callWebAPI(() => SpotifyWebAPI.Player.SetPlaybackVolume(Math.floor(volume.toFixed(2) * 100)));
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -105,7 +105,7 @@ export default class SpPlayer {
         this.togglePlayer = async function() {
             this.playing = !this.playing;
             this.debounceProp('playing');
-            if (this.useWebAPI) return this.callWebAPI(() => SpotifyWebAPI.Player.TogglePlayback(this.playing));
+            if (this.preferWebAPI) return this.callWebAPI(() => SpotifyWebAPI.Player.TogglePlayback(this.playing));
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -120,7 +120,7 @@ export default class SpPlayer {
         this.seek = async function(position) {
             this.elapsed = position;
             this.debounceProp('elapsed')
-            if (this.useWebAPI) return this.callWebAPI(() => SpotifyWebAPI.Player.SeekToPosition(Math.floor(position)));
+            if (this.preferWebAPI) return this.callWebAPI(() => SpotifyWebAPI.Player.SeekToPosition(Math.floor(position)));
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -132,9 +132,22 @@ export default class SpPlayer {
             }
         }
 
+        this.playPlaylist = async function(playlist, offset) {
+            if (!playlist?.id) return ArgWarn('playPlaylist', 'playlist');
+            return this.callWebAPI(() => SpotifyWebAPI.Player.StartPlayback(undefined, {
+                'context_uri': 'spotify:playlist:' + playlist.id,
+                offset: offset,
+            }), 500);
+        }
+
+        this.playTrack = async function(track) {
+            if (!track?.id) return ArgWarn('playTrack', 'track');
+            return this.callWebAPI(() => SpotifyWebAPI.Player.StartPlayback(undefined, {uris: ['spotify:track:' + track?.id]}), 500);
+        }
+
         this.skip = async function() {
             // does not need to be debounced
-            if (this.useWebAPI) return this.callWebAPI(() => SpotifyWebAPI.Player.SkipToNext());
+            if (this.preferWebAPI) return this.callWebAPI(() => SpotifyWebAPI.Player.SkipToNext());
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -148,7 +161,7 @@ export default class SpPlayer {
 
         this.prev = async function() {
             // does not need to be debounced
-            if (this.useWebAPI) return this.callWebAPI( () => SpotifyWebAPI.Player.SkipToPrevious());
+            if (this.preferWebAPI) return this.callWebAPI( () => SpotifyWebAPI.Player.SkipToPrevious());
             if (this.playerAPI) {
                 if (!this.ready) {
                     ConsoleWarnNotReady();
@@ -195,12 +208,13 @@ export default class SpPlayer {
         }
 
         // query Web API after call to get updated state
-        this.callWebAPI = async (func) => {
+        this.callWebAPI = async (func, timeout = 250) => {
             const result = await func();
+            if (!result) return;
             if (result.ok) {
                 setTimeout(async () => {
                     await queryPlayerState();
-                }, 250);
+                }, timeout);
             }
             return result;
         }
@@ -211,7 +225,7 @@ export default class SpPlayer {
 
         this.debounceProp = (propName) => {
             // used to minimize desync between clients while using the Web API
-            if (this.useWebAPI) {
+            if (this.preferWebAPI) {
                 if (this.debouncedProps[propName]) {
                     clearTimeout(this.debouncedProps[propName]);
                 }
@@ -220,6 +234,10 @@ export default class SpPlayer {
                 }, this.debounceDuration);
                 return true;
             }
+        }
+
+        function ArgWarn(funcName, argName) {
+            console.warn(`[SpPlayer] Invalid ${argName} passed to ${funcName}.`);
         }
 
         function ConsoleWarn(funcName) {

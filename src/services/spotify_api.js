@@ -1,6 +1,6 @@
 import { SessionStorage } from 'quasar'
 
-const clientId = '13bfdac0ac4a4cbca6cd3bf2c620c93d';
+const clientId = '9689d0083f8045c8b48618e15024b9f9';
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
 
@@ -142,7 +142,7 @@ export async function fetchSpotifyAPI(request) {
                 Authorization: `Bearer ${accessToken}`,
                 'Access-Control-Request-Headers': 'Retry-After',
             },
-            body: request.body ?? undefined,
+            body: request.body,
         }
 
         const result = await fetch(request.url, requestInit);

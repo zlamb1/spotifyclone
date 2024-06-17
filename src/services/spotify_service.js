@@ -117,10 +117,10 @@ async function queryPlayerState() {
 
                 if (activeDevice.value.id === player.value.id) {
                     player.value.active = true;
-                    player.value.useWebAPI = false;
+                    player.value.preferWebAPI = false;
                 } else {
                     player.value.active = false;
-                    player.value.useWebAPI = true;
+                    player.value.preferWebAPI = true;
                     if (!player.value.isDebounced('volume')) {
                         player.value.volume = activeDevice.value.volume / 100;
                     }
@@ -140,7 +140,7 @@ async function queryPlayerState() {
 
             const type = SpType.FromSpotifyAPI(currently_playing_type);
             if (type === SpType.Track) {
-                player.value.currentlyPlaying = new SpTrack(item);
+                player.value.currentlyPlaying = new SpTrack({added_at: null, added_by: null, is_loca: item.local}, item);
             }
         } catch (err) {
             console.warn('[SpotifyService]: Failed to parse player state JSON: ', err);

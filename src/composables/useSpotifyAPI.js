@@ -17,15 +17,16 @@ export function useActiveDevice() {
 }
 
 function useRefresh(refreshFunc, refreshInterval) {
-    let clearId;
+    const clearId = ref(0);
     onMounted(() => {
-        clearId = setInterval(refreshFunc, refreshInterval);
+        clearId.value = setInterval(refreshFunc, refreshInterval);
     });
     onUnmounted(() => {
        clearInterval(clearId);
-       clearId = undefined;
+       clearId.value = undefined;
     });
     refreshFunc();
+    return clearId;
 }
 
 export function usePlaylist(url) {
@@ -37,18 +38,22 @@ export function usePlaylist(url) {
         }
         playlist.value = await SpotifyWebAPI.Playlists.GetPlaylist(url.value);
     }
-    watch(url, async () => {
+    const unwatch = watch(url, async () => {
         await onRefresh();
     });
-    useRefresh(onRefresh, 15 * 1000);
-    return playlist;
+    const clearId = useRefresh(onRefresh, 15 * 1000);
+    const unsub = () => {
+        if (clearId.value) clearInterval(clearId);
+        unwatch();
+    }
+    return { playlist, unsub };
 }
 
 export function useActivePlaylist() {
     return usePlaylist(activePlaylist);
 }
 
-export function useOwnerPlaylists() {
+export function useUserPlaylists() {
     const playlists = ref([]);
     useRefresh(async () => {
         playlists.value = await SpotifyWebAPI.Playlists.GetOwnerPlaylists(50, 0);
@@ -112,6 +117,15 @@ export const SpotifyWebAPI = Object.freeze({
                     'device_ids': [deviceId],
                     play: play ?? false,
                 }),
+            });
+        },
+        StartPlayback: async (deviceId, body) => {
+            return await fetchSpotifyAPI({
+                url: appendArgs(`https://api.spotify.com/v1/me/player/play`, {
+                    'device_id': deviceId,
+                }),
+                method: 'PUT',
+                body: JSON.stringify(body),
             });
         },
         TogglePlayback: async (play, deviceId) => {
