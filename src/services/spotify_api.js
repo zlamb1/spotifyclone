@@ -124,7 +124,14 @@ async function generateCodeChallenge(codeVerifier) {
 const rateLimitTimeout = 60 * 60 * 1000;
 let rateLimited = false;
 
+const disableFetchingOnHidden = true;
+
 export async function fetchSpotifyAPI(request) {
+    if (disableFetchingOnHidden && document.hidden) {
+        console.warn('[SpotifyAPI]: Rejecting fetch request as document is hidden.')
+        return;
+    }
+
     if (!accessToken) {
         console.error('[SpotifyAPI]: Attempted to make API call with invalid access token.');
         return;

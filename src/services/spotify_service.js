@@ -167,6 +167,7 @@ setInterval(() => {
 
 setInterval(async () => {
     const result = await fetchSpotifyAPI({url: 'https://api.spotify.com/v1/me/player/devices'});
+    if (!result) return;
     if (result.ok) {
         try {
             const { devices } = await result.json();
