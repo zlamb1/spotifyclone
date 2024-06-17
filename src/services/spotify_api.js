@@ -1,6 +1,6 @@
 import { SessionStorage } from 'quasar'
 
-const clientId = '9689d0083f8045c8b48618e15024b9f9';
+const clientId = '656b8e65db8a43248fa3c90a050bfad1';
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
 

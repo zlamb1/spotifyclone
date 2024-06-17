@@ -3,6 +3,7 @@ import { player, spDevices, activeDevice, activePlaylist } from '../services/spo
 import SpCategory from "../model/SpCategory.js";
 import SpPlaylist from "../model/SpPlaylist.js";
 import {onMounted, onUnmounted, ref, watch} from "vue";
+import SpError from "../model/SpError.js";
 
 export function useSpotifyPlayer() {
     return player;
@@ -36,7 +37,10 @@ export function usePlaylist(url) {
             playlist.value = null;
             return;
         }
-        playlist.value = await SpotifyWebAPI.Playlists.GetPlaylist(url.value);
+        const res = await SpotifyWebAPI.Playlists.GetPlaylist(url.value);
+        if (res !== SpError.RateLimit) {
+            playlist.value = await SpotifyWebAPI.Playlists.GetPlaylist(url.value);
+        }
     }
     const unwatch = watch(url, async () => {
         await onRefresh();
@@ -87,6 +91,17 @@ const tryParseResponse = async (res) => {
             console.warn('[SpotifyWebAPI]: Error occured while parsing response JSON: ', err);
         }
     }
+}
+
+const checkError = (res) => {
+    if (res?.status === 429) return SpError.RateLimit;
+}
+
+const parseResponse = async (res, func) => {
+    const error = checkError(res);
+    if (error) return error;
+    const json = await tryParseResponse(res);
+    if (json) return func(json);
 }
 
 export const SpotifyWebAPI = Object.freeze({
@@ -195,8 +210,9 @@ export const SpotifyWebAPI = Object.freeze({
                 url: `https://api.spotify.com/v1/playlists/${playlistId}`,
             });
 
-            const json = await tryParseResponse(res);
-            if (json) return new SpPlaylist(json);
+            return parseResponse(res, (json) => {
+                return new SpPlaylist(json);
+            });
         },
         GetOwnerPlaylists: async (limit, offset) => {
             const res = await fetchSpotifyAPI({
@@ -205,9 +221,9 @@ export const SpotifyWebAPI = Object.freeze({
                     offset: offset,
                 }),
             });
-
-            const json = await tryParseResponse(res);
-            if (json) return json?.items?.map((playlist) => new SpPlaylist(playlist));
+            return parseResponse(res, (json) => {
+                return json?.items?.map((playlist) => new SpPlaylist(playlist));;
+            });
         }
     },
 });

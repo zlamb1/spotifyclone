@@ -103,7 +103,7 @@ const pageHeight = inject('pageHeight');
 </script>
 
 <template>
-  <div class="col rounded-borders relative-position" style="overflow-y: scroll" :style="`max-height: ${pageHeight}px`" ref="container">
+  <div class="col rounded-borders relative-position" style="overflow-y: scroll" :style="`min-height: ${pageHeight}px; max-height: ${pageHeight}px`" ref="container">
     <transition name="fade">
       <div style="position: sticky; top: 0; height: 0; z-index: 9999" v-show="computedShowHeader">
         <div class="row items-center q-gutter-x-sm q-px-lg q-py-sm" :style="`background: ${computedBackground}`">
@@ -122,7 +122,7 @@ const pageHeight = inject('pageHeight');
         </div>
       </div>
     </transition>
-    <div style="background-attachment: fixed" :style="`background: ${computedBackground}`" >
+    <div class="full-height" style="background-attachment: fixed" :style="`background: ${computedBackground}`" >
       <div class="row q-pa-lg" v-if="playlist">
         <PlaylistThumbnail color="accent" text-color="accent-two" class="col-auto shadow-1 thumbnail" icon-size="lg" :playlist="playlist" />
         <div class="col column justify-end q-mx-lg non-selectable">
@@ -130,7 +130,7 @@ const pageHeight = inject('pageHeight');
           <div class="text-secondary text-h3">{{playlist?.name}}</div>
           <div class="row items-center q-gutter-x-sm">
             <div class="text-secondary">{{playlist?.owner?.display_name}}</div>
-            <div class="text-accent-two">• {{count}} song{{count > 1 ? 's' : ''}}, {{playlist?.getDuration()}}</div>
+            <div class="text-accent-two">• {{count}} song{{count > 1 ? 's' : ''}}, {{playlist?.getDuration?.()}}</div>
           </div>
         </div>
       </div>
