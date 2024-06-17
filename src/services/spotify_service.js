@@ -151,6 +151,13 @@ async function queryPlayerState() {
 // fetch state on startup
 queryPlayerState();
 
+document.addEventListener('visibilitychange', async () => {
+    if (!document.hidden) {
+        // query for state change since document was hidden
+        await queryPlayerState();
+    }
+});
+
 // setup polling
 const criticalPollRate = 5 * 1000;
 player.value.debounceDuration = 2000;

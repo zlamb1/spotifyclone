@@ -10,6 +10,7 @@ import {activePlaylist} from "../services/spotify_service.js";
 import {useEventListenerRef} from "../composables/useEventListener.js";
 import usePrimaryColor from "../composables/usePrimaryColor.js";
 import TableHeader from "../components/table/TableHeader.vue";
+import PlaylistFind from "../components/PlaylistFind.vue";
 
 const route = useRoute();
 const id = ref(route.params.id);
@@ -58,11 +59,15 @@ const computedShowHeader = computed(() => {
   return scrollY.value > btnContainer.value?.offsetTop;
 });
 
-const playIcon = computed(() => {
+const computedPlayIcon = computed(() => {
   if (playlist.value?.id === activePlaylist.value) {
     return player.value?.playing ? 'pause' : 'play_arrow';
   }
   return 'play_arrow';
+});
+
+const computedHasTracks = computed(() => {
+  return playlist.value?.tracks?.length > 0;
 });
 
 const onClick = () => {
@@ -107,7 +112,7 @@ const pageHeight = inject('pageHeight');
     <transition name="fade">
       <div style="position: sticky; top: 0; height: 0; z-index: 9999" v-show="computedShowHeader">
         <div class="row items-center q-gutter-x-sm q-px-lg q-py-sm" :style="`background: ${computedBackground}`">
-          <q-btn :icon="playIcon" color="primary" text-color="dark" size="16px" round @click="onClick" />
+          <q-btn :icon="computedPlayIcon" color="primary" text-color="dark" size="16px" round @click="onClick" v-show="computedHasTracks" />
           <div class="text-h5 non-selectable">{{playlist?.name}}</div>
         </div>
         <div class="row justify-between bg-dark-accent q-py-none q-px-lg" style="border-bottom: 1px solid rgba(255, 255, 255, 0.15)">
@@ -130,15 +135,27 @@ const pageHeight = inject('pageHeight');
           <div class="text-secondary text-h3">{{playlist?.name}}</div>
           <div class="row items-center q-gutter-x-sm">
             <div class="text-secondary">{{playlist?.owner?.display_name}}</div>
-            <div class="text-accent-two">• {{count}} song{{count > 1 ? 's' : ''}}, {{playlist?.getDuration?.()}}</div>
+            <div class="text-accent-two">• {{count ?? 0}} song{{count !== 1 ? 's' : ''}}, {{playlist?.getDuration?.()}}</div>
           </div>
         </div>
       </div>
       <div class="column q-px-lg" style="background: linear-gradient(rgba(0, 0, 0, 0.1), #121212)">
-        <div class="row q-my-md" ref="btnContainer">
-          <q-btn :icon="playIcon" color="primary" text-color="dark-accent" size="lg" push round @click="onClick" />
+        <div class="row items-center q-gutter-x-md q-my-md" ref="btnContainer">
+          <q-btn :icon="computedPlayIcon" color="primary" text-color="dark-accent" size="lg" push round @click="onClick" v-show="computedHasTracks" />
+          <HighlightBtn class="text-accent-two" active-class="text-secondary">
+            <q-icon size="lg" name="o_person_add" />
+            <q-tooltip class="bg-accent shadow-1" anchor="top middle" self="bottom middle" style="font-size: 14px">
+              Invite collaborators {{playlist?.name}}
+            </q-tooltip>
+          </HighlightBtn>
+          <HighlightBtn class="text-accent-two" active-class="text-secondary">
+            <q-icon size="lg" name="more_horiz" />
+            <q-tooltip class="bg-accent shadow-1" anchor="top middle" self="bottom middle" style="font-size: 14px">
+              More options for {{playlist?.name}}
+            </q-tooltip>
+          </HighlightBtn>
         </div>
-        <q-table class="bg-transparent full-width" :rows="computedRows" :rows-per-page-options="[0]" separator="horizontal" dense flat>
+        <q-table class="bg-transparent full-width" :rows="computedRows" :rows-per-page-options="[0]" separator="horizontal" dense flat v-show="computedHasTracks">
           <template #header>
             <TableHeader :columns="tableColumns" />
           </template>
@@ -147,6 +164,10 @@ const pageHeight = inject('pageHeight');
           </template>
           <template #bottom></template>
         </q-table>
+        <div v-show="!computedHasTracks">
+          <q-separator />
+          <PlaylistFind class="q-py-lg" />
+        </div>
       </div>
     </div>
   </div>
