@@ -1,4 +1,5 @@
 import { SessionStorage } from 'quasar'
+import SpError from "../model/SpError.js";
 
 const clientId = '656b8e65db8a43248fa3c90a050bfad1';
 const params = new URLSearchParams(window.location.search);
@@ -129,17 +130,17 @@ const disableFetchingOnHidden = true;
 export async function fetchSpotifyAPI(request) {
     if (disableFetchingOnHidden && document.hidden) {
         console.warn('[SpotifyAPI]: Rejecting fetch request as document is hidden.')
-        return;
+        return SpError.APIError;
     }
 
     if (!accessToken) {
         console.error('[SpotifyAPI]: Attempted to make API call with invalid access token.');
-        return;
+        return SpError.APIError;
     }
 
     if (rateLimited) {
         console.warn(`[SpotifyAPI]: Cannot make API calls due to rate limiting. Please wait.`);
-        return;
+        return SpError.APIError;
     }
 
     if (request.url) {

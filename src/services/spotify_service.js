@@ -22,9 +22,6 @@ const onReady = [];
 const setState = (player, state) => {
     if (!player.value.isDebounced('playing')) player.value.playing = !state.paused;
     if (!player.value.isDebounced('elapsed')) player.value.elapsed = state.position;
-    // does this factor in other types (i.e. Episode)
-    // TODO: consider other types
-    player.value.currentTime = SpTrack.FromSpotifyAPI(state.track_window.current_track);
     if (!player.value.isDebounced('shuffle')) player.value.shuffle = state.shuffle;
     if (!player.value.isDebounced('repeatMode')) player.value.repeatMode = SpRepeatMode.FromSpotifyAPI(state.repeat_mode);
 }

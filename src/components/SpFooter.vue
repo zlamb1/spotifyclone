@@ -15,6 +15,8 @@ import VolumeControl from "./control/VolumeControl.vue";
 import SpRepeatMode from "../model/SpRepeatMode.js";
 import RepeatControl from "./control/RepeatControl.vue";
 import TrackPreview from "./TrackPreview.vue";
+import PlaylistContextMenu from "./menu/PlaylistContextMenu.vue";
+import ArtistContextMenu from "./menu/ArtistContextMenu.vue";
 
 const player = useSpotifyPlayer();
 const activeDevice = useActiveDevice();
@@ -43,7 +45,11 @@ const formatDuration = (duration) => {
   <q-footer>
     <div class="row justify-center q-py-sm q-px-md">
       <div class="col-4" v-show="screen.gt.xs">
-        <TrackPreview :track="player.currentlyPlaying" v-if="player?.currentlyPlaying" />
+        <TrackPreview :track="player.currentlyPlaying" v-if="player?.currentlyPlaying">
+          <template #artist-link>
+            <ArtistContextMenu />
+          </template>
+        </TrackPreview>
       </div>
       <div class="column col-10 col-sm-4 col-md full-height justify-center">
         <div class="row justify-center relative-position q-mb-sm q-gutter-x-sm">

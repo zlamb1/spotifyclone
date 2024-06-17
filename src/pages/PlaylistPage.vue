@@ -38,7 +38,7 @@ const tableColumns = [
 ];
 
 const computedBackground = computed(() => {
-  return `linear-gradient(to bottom, ${color.value} 0%, ${defaultColor} 400px)`;
+  return `linear-gradient(to bottom, ${color.value}, ${defaultColor} 500px)`;
 });
 
 const computedRows = computed(() => {
@@ -80,6 +80,15 @@ const onClick = () => {
   }
 }
 
+const onInviteCollaborators = () => {
+  const href = playlist.value?.href;
+  if (href) {
+    navigator.clipboard.writeText(href);
+  } else {
+
+  }
+}
+
 const findPrimaryColor = usePrimaryColor();
 
 watch(route, (_route) => {
@@ -103,12 +112,23 @@ watch(playlist, (newPlaylist, oldPlaylist) => {
   }
 });
 
-const pageHeight = inject('pageHeight');
+const calcPageHeight = inject('calcPageHeight');
+
+const selected = ref([]);
+
+const onSelected = (props) => {
+  if (props.selected) {
+    selected.value.length = 0;
+  } else {
+    selected.value.length = 0;
+    props.selected = true;
+  }
+}
 
 </script>
 
 <template>
-  <div class="col rounded-borders relative-position" style="overflow-y: scroll" :style="`min-height: ${pageHeight}px; max-height: ${pageHeight}px`" ref="container">
+  <div class="col rounded-borders relative-position" style="overflow-y: scroll" :style="`min-height: ${calcPageHeight}; max-height: ${calcPageHeight}`" ref="container">
     <transition name="fade">
       <div style="position: sticky; top: 0; height: 0; z-index: 9999" v-show="computedShowHeader">
         <div class="row items-center q-gutter-x-sm q-px-lg q-py-sm" :style="`background: ${computedBackground}`">
@@ -127,7 +147,7 @@ const pageHeight = inject('pageHeight');
         </div>
       </div>
     </transition>
-    <div class="full-height" style="background-attachment: fixed" :style="`background: ${computedBackground}`" >
+    <div style="background-attachment: fixed;" :style="`background: ${computedBackground}; min-height: ${calcPageHeight}`" >
       <div class="row q-pa-lg" v-if="playlist">
         <PlaylistThumbnail color="accent" text-color="accent-two" class="col-auto shadow-1 thumbnail" icon-size="lg" :playlist="playlist" />
         <div class="col column justify-end q-mx-lg non-selectable">
@@ -142,7 +162,7 @@ const pageHeight = inject('pageHeight');
       <div class="column q-px-lg" style="background: linear-gradient(rgba(0, 0, 0, 0.1), #121212)">
         <div class="row items-center q-gutter-x-md q-my-md" ref="btnContainer">
           <q-btn :icon="computedPlayIcon" color="primary" text-color="dark-accent" size="lg" push round @click="onClick" v-show="computedHasTracks" />
-          <HighlightBtn class="text-accent-two" active-class="text-secondary">
+          <HighlightBtn class="text-accent-two" active-class="text-secondary" @click="onInviteCollaborators">
             <q-icon size="lg" name="o_person_add" />
             <q-tooltip class="bg-accent shadow-1" anchor="top middle" self="bottom middle" style="font-size: 14px">
               Invite collaborators {{playlist?.name}}
@@ -155,12 +175,15 @@ const pageHeight = inject('pageHeight');
             </q-tooltip>
           </HighlightBtn>
         </div>
-        <q-table class="bg-transparent full-width" :rows="computedRows" :rows-per-page-options="[0]" separator="horizontal" dense flat v-show="computedHasTracks">
+        <q-table class="playlist-table transparent full-width" :rows="computedRows"
+                 :rows-per-page-options="[0]" row-key="index" separator="horizontal"
+                 selection="multiple" v-model:selected="selected"
+                 dense flat v-show="computedHasTracks">
           <template #header>
             <TableHeader :columns="tableColumns" />
           </template>
           <template #body="props">
-            <TrackTableRow :row="props.row" />
+            <TrackTableRow :row="props.row" :selected="props.selected" @click="onSelected(props)" />
           </template>
           <template #bottom></template>
         </q-table>
@@ -172,6 +195,12 @@ const pageHeight = inject('pageHeight');
     </div>
   </div>
 </template>
+
+<style>
+.playlist-table .q-table__bottom {
+  border: none !important;
+}
+</style>
 
 <style lang="scss" scoped>
 .dummy-table {

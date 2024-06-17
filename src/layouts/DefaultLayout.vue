@@ -2,19 +2,18 @@
 
 import SpHeader from "../components/SpHeader.vue";
 import SpFooter from "../components/SpFooter.vue";
-import {useActivePlaylist, useUserPlaylists} from "../composables/useSpotifyAPI.js";
+import {useUserPlaylists} from "../composables/useSpotifyAPI.js";
 import PlaylistThumbnail from "../components/thumbnail/PlaylistThumbnail.vue";
-import {computed, onMounted, provide, ref} from "vue";
-import {useEventListener} from "../composables/useEventListener.js";
+import {computed, provide, ref} from "vue";
 
-const activePlaylist = useActivePlaylist();
+import {activePlaylist} from "../services/spotify_service.js";
+
 const userPlaylists = useUserPlaylists();
 
-const pageHeight = ref(0);
 const offset = ref(0);
 
-const computedPageHeight = computed(() => {
-  return pageHeight.value - offset.value;
+const calcPageHeight = computed(() => {
+  return `calc(-${offset.value}px + 100vh)`;
 });
 
 const styleFn = (_offset) => {
@@ -22,16 +21,10 @@ const styleFn = (_offset) => {
   return { minHeight: _offset ? `calc(100vh - ${_offset}px)` : '100vh' }
 }
 
-onMounted(() => {
-  pageHeight.value = document.documentElement.clientHeight;
-});
-
-useEventListener(window, 'resize', () => {
-  pageHeight.value = document.documentElement.clientHeight;
-});
-
 provide('userPlaylists', userPlaylists);
-provide('pageHeight', computedPageHeight);
+
+provide('pageOffset', offset);
+provide('calcPageHeight', calcPageHeight);
 
 </script>
 
@@ -42,21 +35,21 @@ provide('pageHeight', computedPageHeight);
     <q-page-container>
       <q-page :style-fn="styleFn">
         <div class="row fit q-px-md" style="min-height: inherit;">
-          <div class="column no-wrap bg-dark-accent rounded-borders q-mr-sm" :style="`max-height: ${computedPageHeight}px`" style="overflow-y: scroll">
+          <div class="column no-wrap bg-dark-accent rounded-borders q-mr-sm" :style="`max-height: ${calcPageHeight}`" style="overflow-y: scroll">
             <q-btn icon="menu_book" text-color="accent-two" class="q-pa-md" round>
               <q-tooltip class="bg-accent" anchor="center right" self="center left">
                 <div class="tooltip-text">Expand Your Library</div>
               </q-tooltip>
             </q-btn>
             <q-list class="q-mt-md">
-              <q-item v-for="playlist in userPlaylists" :key="playlist.id" :to="`/playlist/${playlist.id}`" class="q-px-sm" clickable>
+              <q-item v-for="playlist in userPlaylists" :key="playlist.id" :to="`/playlist/${playlist.id}`" class="q-px-sm" active-class="" clickable>
                 <PlaylistThumbnail color="accent" text-color="secondary" :playlist="playlist" />
                 <q-tooltip class="row items-center bg-accent tooltip-text" anchor="center right" self="center left">
                   <div class="column">
-                    <div class="tooltip-text" :class="activePlaylist?.id === playlist.id ? 'text-primary' : ''">{{playlist.name}}</div>
+                    <div class="tooltip-text" :class="activePlaylist === playlist.id ? 'text-primary' : ''">{{playlist.name}}</div>
                     <div class="subtitle">Playlist • {{playlist.owner.display_name}}</div>
                   </div>
-                  <q-icon name="volume_up" size="20px" color="primary" class="q-ml-md" v-show="activePlaylist?.id === playlist.id" />
+                  <q-icon name="volume_up" size="20px" color="primary" class="q-ml-md" v-show="activePlaylist === playlist.id" />
                 </q-tooltip>
               </q-item>
             </q-list>

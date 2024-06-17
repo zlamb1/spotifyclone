@@ -4,10 +4,15 @@ import TextNavControl from "../control/TextNavControl.vue";
 import TrackPreview from "../TrackPreview.vue";
 import {ref} from "vue";
 import {useSpotifyPlayer} from "../../composables/useSpotifyAPI.js";
+import PlaylistContextMenu from "../menu/PlaylistContextMenu.vue";
+import ArtistContextMenu from "../menu/ArtistContextMenu.vue";
 
-defineProps({
+const props = defineProps({
   row: {
     type: Object,
+  },
+  selected: {
+    type: Boolean,
   },
 });
 
@@ -47,8 +52,9 @@ const onClick = (track, playlist) => {
 </script>
 
 <template>
-  <q-tr class="text-accent-two" style="font-size: 24px"
+  <q-tr class="text-accent-two" :style="selected ? 'background: color-mix(in srgb, var(--q-secondary), transparent 93%)' : ''" style="font-size: 24px"
         @mouseenter="isHovering = true" @mouseleave="isHovering = false">
+    <PlaylistContextMenu />
     <q-td class="non-selectable" style="border: 0; font-size: 20px; padding-left: 8px !important;" auto-width>
       <div class="flex flex-center" :class="isPlaying(row?.track?.id) ? 'text-primary' : ''" style="width: 20px">
         <q-icon :name="getPlayIcon(row?.track?.id)" class="cursor-pointer" color="secondary" v-if="isHovering" @click="onClick(row?.track, row?.playlist)" />
@@ -59,7 +65,11 @@ const onClick = (track, playlist) => {
       </div>
     </q-td>
     <q-td style="border: 0">
-      <TrackPreview :track="row?.track" :show-add-to-playlist="false" />
+      <TrackPreview :track="row?.track" :show-add-to-playlist="false">
+        <template #artist-link>
+          <ArtistContextMenu />
+        </template>
+      </TrackPreview>
     </q-td>
     <q-td style="border: 0;">
       <TextNavControl class="text-accent-two" active-class="text-secondary underline"

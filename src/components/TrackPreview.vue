@@ -60,14 +60,16 @@ onUnmounted(() => {
     <div class="row col q-pa-md q-gutter-x-sm" @mouseover="onMouseOver" @mouseleave="isHovering = false">
       <div class="column song-scroller" ref="scrollContainer">
         <div>
-          <RouterLink class="text-secondary link" active-class="underline" :to="{name: 'track', params: { id: track?.id }}">
+          <RouterLink class="text-secondary non-selectable link" active-class="underline" :to="{name: 'track', params: { id: track?.id }}">
             {{track?.name}}
+            <slot name="user-link" />
           </RouterLink>
         </div>
         <div class="row no-wrap">
           <div v-for="(artist, index) in track?.artists" :key="index">
-            <RouterLink class="text-accent-two link" :to="{name: 'artist', params: { id: artist.id }}">
+            <RouterLink class="text-accent-two non-selectable link" :to="{name: 'artist', params: { id: artist.id }}">
               {{artist.name}}
+              <slot name="artist-link" />
             </RouterLink>
             <span class="text-accent-two non-selectable q-mr-xs" v-show="index !== track?.artists?.length - 1">,</span>
           </div>

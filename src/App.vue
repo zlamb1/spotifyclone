@@ -11,7 +11,7 @@ import {RouterView} from "vue-router";
 
 <style>
 body.body--dark {
-  --shadow-color: black;
+  --shadow-color: rgb(25, 24, 24);
 }
 body.body--dark .shadow-1 {
   box-shadow: 0 1px 3px var(--shadow-color), 0 1px 1px var(--shadow-color), 0 2px 1px -1px var(--shadow-color) !important;

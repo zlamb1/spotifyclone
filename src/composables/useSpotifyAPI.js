@@ -23,7 +23,7 @@ function useRefresh(refreshFunc, refreshInterval) {
         clearId.value = setInterval(refreshFunc, refreshInterval);
     });
     onUnmounted(() => {
-       clearInterval(clearId);
+       clearInterval(clearId.value);
        clearId.value = undefined;
     });
     refreshFunc();
@@ -38,9 +38,7 @@ export function usePlaylist(url) {
             return;
         }
         const res = await SpotifyWebAPI.Playlists.GetPlaylist(url.value);
-        if (res !== SpError.RateLimit) {
-            playlist.value = await SpotifyWebAPI.Playlists.GetPlaylist(url.value);
-        }
+        if (!SpError.IsError(res)) playlist.value = res;
     }
     const unwatch = watch(url, async () => {
         await onRefresh();
@@ -60,7 +58,8 @@ export function useActivePlaylist() {
 export function useUserPlaylists() {
     const playlists = ref([]);
     useRefresh(async () => {
-        playlists.value = await SpotifyWebAPI.Playlists.GetOwnerPlaylists(50, 0);
+        const res = await SpotifyWebAPI.Playlists.GetCurrentUserPlaylists(50, 0);
+        if (!SpError.IsError(res)) playlists.value = res;
     }, 15 * 1000);
     return playlists;
 }
@@ -94,6 +93,7 @@ const tryParseResponse = async (res) => {
 }
 
 const checkError = (res) => {
+    if (res === SpError.APIError) return res;
     if (res?.status === 429) return SpError.RateLimit;
 }
 
@@ -125,7 +125,7 @@ export const SpotifyWebAPI = Object.freeze({
     },
     Player: {
         TransferPlayback: async (deviceId, play) => {
-            return fetchSpotifyAPI({
+            return await fetchSpotifyAPI({
                 url: 'https://api.spotify.com/v1/me/player',
                 method: 'PUT',
                 body: JSON.stringify({
@@ -144,7 +144,7 @@ export const SpotifyWebAPI = Object.freeze({
             });
         },
         TogglePlayback: async (play, deviceId) => {
-            return fetchSpotifyAPI({
+            return await fetchSpotifyAPI({
                 url: appendArgs(`https://api.spotify.com/v1/me/player/${play ? 'play' : 'pause'}`, {
                     'device_id': deviceId,
                 }),
@@ -152,7 +152,7 @@ export const SpotifyWebAPI = Object.freeze({
             });
         },
         SkipToNext: async (deviceId) => {
-            return fetchSpotifyAPI({
+            return await fetchSpotifyAPI({
                 url: appendArgs('https://api.spotify.com/v1/me/player/next', {
                     'device_id': deviceId,
                 }),
@@ -160,7 +160,7 @@ export const SpotifyWebAPI = Object.freeze({
             });
         },
         SkipToPrevious: async (deviceId) => {
-            return fetchSpotifyAPI({
+            return await fetchSpotifyAPI({
                 url: appendArgs('https://api.spotify.com/v1/me/player/previous', {
                     'device_id': deviceId,
                 }),
@@ -168,7 +168,7 @@ export const SpotifyWebAPI = Object.freeze({
             });
         },
         SeekToPosition: async (position, deviceId) => {
-            return fetchSpotifyAPI({
+            return await fetchSpotifyAPI({
                 url: appendArgs('https://api.spotify.com/v1/me/player/seek', {
                     'position_ms': position,
                     'device_id': deviceId,
@@ -177,7 +177,7 @@ export const SpotifyWebAPI = Object.freeze({
             });
         },
         SetRepeatMode: async (repeatMode, deviceId) => {
-            return fetchSpotifyAPI({
+            return await fetchSpotifyAPI({
                 url: appendArgs('https://api.spotify.com/v1/me/player/repeat', {
                     state: repeatMode,
                     'device_id': deviceId,
@@ -186,7 +186,7 @@ export const SpotifyWebAPI = Object.freeze({
             });
         },
         SetPlaybackVolume: async (volume, deviceId) => {
-            return fetchSpotifyAPI({
+            return await fetchSpotifyAPI({
                 url: appendArgs('https://api.spotify.com/v1/me/player/volume', {
                     'volume_percent': volume ?? 0,
                     'device_id': deviceId,
@@ -195,7 +195,7 @@ export const SpotifyWebAPI = Object.freeze({
             });
         },
         TogglePlaybackShuffle: async (shuffle, deviceId) => {
-            return fetchSpotifyAPI({
+            return await fetchSpotifyAPI({
                 url: appendArgs('https://api.spotify.com/v1/me/player/shuffle', {
                     state: shuffle,
                     'device_id': deviceId,
@@ -214,7 +214,7 @@ export const SpotifyWebAPI = Object.freeze({
                 return new SpPlaylist(json);
             });
         },
-        GetOwnerPlaylists: async (limit, offset) => {
+        GetCurrentUserPlaylists: async (limit, offset) => {
             const res = await fetchSpotifyAPI({
                 url: appendArgs('https://api.spotify.com/v1/me/playlists', {
                     limit: limit,

@@ -2,8 +2,7 @@
 
 import SpRepeatMode from "./SpRepeatMode.js";
 import { SpotifyWebAPI } from "../composables/useSpotifyAPI.js";
-import {queryPlayerState} from "../services/spotify_service.js";
-import SpType from "./SpType.js";
+import {activeDevice, queryPlayerState} from "../services/spotify_service.js";
 
 export default class SpPlayer {
     constructor() {
@@ -133,8 +132,11 @@ export default class SpPlayer {
         }
 
         this.playPlaylist = async function(playlist, offset) {
+            let deviceId = this.id;
+            if (!this.id || activeDevice.value) deviceId = undefined;
+
             if (!playlist?.id) return ArgWarn('playPlaylist', 'playlist');
-            return this.callWebAPI(() => SpotifyWebAPI.Player.StartPlayback(undefined, {
+            return this.callWebAPI(() => SpotifyWebAPI.Player.StartPlayback(deviceId, {
                 'context_uri': 'spotify:playlist:' + playlist.id,
                 offset: offset,
             }), 500);
@@ -211,7 +213,7 @@ export default class SpPlayer {
         this.callWebAPI = async (func, timeout = 250) => {
             const result = await func();
             if (!result) return;
-            if (result.ok) {
+            if (result.ok && timeout >= 0) {
                 setTimeout(async () => {
                     await queryPlayerState();
                 }, timeout);

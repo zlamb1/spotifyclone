@@ -8,6 +8,7 @@ export default class SpPlaylist {
         this.name = data.name;
         this.owner = data.owner;
         this.public = data.public;
+        this.href = data.external_urls.spotify;
 
         this.tracks = data?.tracks?.items?.map((item) => new SpTrack(new SpItem(item), item.track));
 
