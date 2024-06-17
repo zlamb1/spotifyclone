@@ -1,14 +1,24 @@
-$primary     : #1db954
-$secondary   : #ffffff
-$accent      : #242424
-$accent-two  : #7e7e7e
+$primary          : #1db954
 
-$dark        : #000000
-$dark-accent : #121212
+$secondary        : #ffffff
+$secondary-accent : #afafaf
+
+$accent           : #242424
+$accent-two       : #7e7e7e
+
+$dark             : #000000
+$dark-accent      : #121212
 
 *
+  --q-secondary-accent: $secondary-accent
   --q-accent-two: $accent-two
   --q-dark-accent: $dark-accent
+
+.text-secondary-accent
+  color: $secondary-accent !important
+
+.bg-secondary-accent
+  background: $secondary-accent !important
 
 .text-accent-two
   color: $accent-two !important

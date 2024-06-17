@@ -135,7 +135,7 @@ const pageHeight = inject('pageHeight');
           <div class="text-secondary text-h3">{{playlist?.name}}</div>
           <div class="row items-center q-gutter-x-sm">
             <div class="text-secondary">{{playlist?.owner?.display_name}}</div>
-            <div class="text-accent-two">• {{count ?? 0}} song{{count !== 1 ? 's' : ''}}, {{playlist?.getDuration?.()}}</div>
+            <div class="text-secondary-accent">• {{count ?? 0}} song{{count !== 1 ? 's' : ''}}, {{playlist?.getDuration?.()}}</div>
           </div>
         </div>
       </div>
