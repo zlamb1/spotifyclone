@@ -54,10 +54,7 @@ provide('calcPageHeight', calcPageHeight);
               </q-item>
             </q-list>
           </div>
-          <div>
-            {{userPlaylists?.length}}
-            <slot />
-          </div>
+          <slot />
         </div>
       </q-page>
     </q-page-container>
