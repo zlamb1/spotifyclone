@@ -4,7 +4,6 @@ import SpCategory from "../model/SpCategory.js";
 import SpPlaylist from "../model/SpPlaylist.js";
 import {onMounted, onUnmounted, ref, watch} from "vue";
 import SpError from "../model/SpError.js";
-import {Notify, useQuasar} from "quasar";
 
 export function useSpotifyPlayer() {
     return player;
@@ -39,9 +38,7 @@ export function usePlaylist(url) {
             return;
         }
         const res = await SpotifyWebAPI.Playlists.GetPlaylist(url.value);
-        if (SpError.IsError(res)) {
-            Notify.create({message: res.description, color: 'red'});
-        } else {
+        if (!SpError.IsError(res)) {
             playlist.value = res;
         }
     }

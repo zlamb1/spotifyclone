@@ -1,6 +1,14 @@
 <script setup>
-import DefaultLayout from "./layouts/DefaultLayout.vue";
+
 import {RouterView} from "vue-router";
+import {useIsMobile, useDynamicComponent} from "./composables/useDynamicComponent.js";
+import {provide} from "vue";
+
+const isMobile = useIsMobile();
+provide('isMobile', isMobile);
+
+const DefaultLayout = useDynamicComponent('layouts/DefaultLayout');
+
 </script>
 
 <template>
