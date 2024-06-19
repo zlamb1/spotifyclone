@@ -5,7 +5,7 @@ import {computed, inject, ref} from "vue";
 import PlaylistThumbnail from "../components/thumbnail/PlaylistThumbnail.vue";
 import HighlightBtn from "../components/btn/HighlightBtn.vue";
 import TrackTableRow from "../components/table/TrackTableRow.vue";
-import {activePlaylist} from "../services/spotify_service.js";
+import {activePlaylistId} from "../services/spotify_service.js";
 import {useEventListenerRef} from "../composables/useEventListener.js";
 import TableHeader from "../components/table/TableHeader.vue";
 import PlaylistFind from "../components/PlaylistFind.vue";
@@ -55,7 +55,7 @@ const computedShowHeader = computed(() => {
 });
 
 const computedPlayIcon = computed(() => {
-  if (playlist.value?.id === activePlaylist.value) {
+  if (playlist.value?.id === activePlaylistId.value) {
     return player.value?.playing ? 'pause' : 'play_arrow';
   }
   return 'play_arrow';
@@ -66,7 +66,7 @@ const computedHasTracks = computed(() => {
 });
 
 const onClick = () => {
-  if (activePlaylist.value && playlist.value?.id === activePlaylist.value) {
+  if (activePlaylistId.value && playlist.value?.id === activePlaylistId.value) {
     player.value?.togglePlayer();
     return;
   }

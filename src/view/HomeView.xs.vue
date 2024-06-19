@@ -2,7 +2,7 @@
 
 import {computed, ref} from "vue";
 import {SpotifyWebAPI, usePlaylists, useSpotifyPlayer} from "../composables/useSpotifyAPI.js";
-import {activePlaylist} from "../services/spotify_service.js";
+import {activePlaylistId} from "../services/spotify_service.js";
 
 const player = useSpotifyPlayer();
 
@@ -64,7 +64,7 @@ const isHoveringCarousel = ref(false);
           <div class="row no-wrap items-center bg-accent rounded-borders cursor-pointer">
             <q-img :src="playlist.getFirstImage()" width="50px" height="50px" class="rounded-borders col-auto" ratio="1" />
             <span class="col on-right">{{playlist.name}}</span>
-            <div v-show="player?.playing && playlist?.id === activePlaylist">
+            <div v-show="player?.playing && playlist?.id === activePlaylistId">
               <q-spinner-audio class="on-left" color="primary" />
             </div>
           </div>

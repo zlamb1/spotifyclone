@@ -5,7 +5,7 @@ import SpFooter from "../components/SpFooter.vue";
 import PlaylistThumbnail from "../components/thumbnail/PlaylistThumbnail.vue";
 import {computed, inject, provide, ref} from "vue";
 
-import {activePlaylist} from "../services/spotify_service.js";
+import {activePlaylistId} from "../services/spotify_service.js";
 
 const userPlaylists = inject('userPlaylists');
 
@@ -41,10 +41,10 @@ provide('calcPageHeight', calcPageHeight);
                 <PlaylistThumbnail color="accent" text-color="secondary" :playlist="playlist" />
                 <q-tooltip class="row items-center bg-accent tooltip-text" anchor="center right" self="center left">
                   <div class="column">
-                    <div class="tooltip-text" :class="activePlaylist === playlist.id ? 'text-primary' : ''">{{playlist.name}}</div>
+                    <div class="tooltip-text" :class="activePlaylistId === playlist.id ? 'text-primary' : ''">{{playlist.name}}</div>
                     <div class="subtitle">Playlist • {{playlist.owner.display_name}}</div>
                   </div>
-                  <q-icon name="volume_up" size="20px" color="primary" class="q-ml-md" v-show="activePlaylist === playlist.id" />
+                  <q-icon name="volume_up" size="20px" color="primary" class="q-ml-md" v-show="activePlaylistId === playlist.id" />
                 </q-tooltip>
               </q-item>
             </q-list>

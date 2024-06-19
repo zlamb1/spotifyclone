@@ -11,7 +11,7 @@ const player = ref(new SpPlayer());
 const spDevices = ref([]);
 
 const activeDevice = ref(null);
-const activePlaylist = ref(null);
+const activePlaylistId = ref(null);
 
 const onReady = [];
 
@@ -130,7 +130,7 @@ async function queryPlayerState() {
 
             if (context && context?.type === 'playlist') {
                 // set active playlist to id of current context href
-                activePlaylist.value = context.href.substring(context.href.lastIndexOf('/') + 1);
+                activePlaylistId.value = context.href.substring(context.href.lastIndexOf('/') + 1);
             }
 
             // prevent state from desyncing
@@ -197,4 +197,4 @@ setInterval( async () => {
     await queryPlayerState();
 }, criticalPollRate);
 
-export { player, spDevices, activeDevice, activePlaylist, onReady, queryPlayerState };
+export { player, spDevices, activeDevice, activePlaylistId, onReady, queryPlayerState };

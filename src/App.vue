@@ -2,8 +2,28 @@
 
 import {RouterView} from "vue-router";
 import {useIsMobile, useDynamicComponent} from "./composables/useDynamicComponent.js";
-import {provide} from "vue";
-import {useUserPlaylists} from "./composables/useSpotifyAPI.js";
+import {provide, ref, watch} from "vue";
+import {usePlaylist, useUserPlaylists} from "./composables/useSpotifyAPI.js";
+import {activePlaylistId} from "./services/spotify_service.js";
+import usePrimaryColor from "./composables/usePrimaryColor.js";
+
+const activePlaylist = usePlaylist(activePlaylistId).playlist;
+provide('activePlaylist', activePlaylist);
+
+const defaultColor = '#242424';
+
+const activePrimaryColor = ref(defaultColor);
+provide('activePrimaryColor', activePrimaryColor)
+
+const findPrimaryColor = usePrimaryColor();
+
+watch(activePlaylist, () => {
+  const url = activePlaylist.value?.getFirstImage();
+  if (!url) activePrimaryColor.value = defaultColor;
+  else {
+    findPrimaryColor(url, (rgb) => activePrimaryColor.value = rgb);
+  }
+});
 
 const userPlaylists = useUserPlaylists();
 provide('userPlaylists', userPlaylists);
@@ -11,7 +31,10 @@ provide('userPlaylists', userPlaylists);
 const isMobile = useIsMobile();
 provide('isMobile', isMobile);
 
-const DefaultLayout = useDynamicComponent('layouts/DefaultLayout');
+const DefaultLayout = useDynamicComponent({
+  xs: 'layouts/DefaultLayout.xs',
+  sm: 'layouts/DefaultLayout.sm'
+});
 
 </script>
 

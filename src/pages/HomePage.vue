@@ -2,7 +2,10 @@
 
 import {useDynamicComponent} from "../composables/useDynamicComponent.js";
 
-const HomeView = useDynamicComponent('view/HomeView');
+const HomeView = useDynamicComponent({
+  xs: 'view/HomeView.xs',
+  sm: 'view/HomeView.sm',
+});
 
 </script>
 

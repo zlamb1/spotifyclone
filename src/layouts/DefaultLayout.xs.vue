@@ -1,9 +1,13 @@
 <script setup>
 
-import {computed, provide, ref} from "vue";
+import {computed, inject, provide, ref} from "vue";
 import {activeDevice, player} from "../services/spotify_service.js";
 
-import DeviceButton from "../components/btn/DeviceButton.mobile.vue";
+import { usePlayIcon } from "../composables/usePlayIcon.js";
+
+import DeviceButton from "../components/btn/DeviceButton.xs.vue";
+
+const activePrimaryColor = inject('activePrimaryColor');
 
 const offset = ref(0);
 const calcPageHeight = computed(() => {
@@ -21,6 +25,8 @@ const usingOtherDevice = computed(() => {
   return !player.value?.active && activeDevice.value;
 });
 
+const playIcon = usePlayIcon();
+
 </script>
 
 <template>
@@ -32,13 +38,17 @@ const usingOtherDevice = computed(() => {
         <q-route-tab to="/library" name="library" icon="library_music" style="font-size: 10px" no-caps>Your Library</q-route-tab>
       </q-tabs>
       <div class="player-container" v-show="player?.currentlyPlaying">
-        <div class="row justify-between bg-accent rounded-borders q-pa-xs q-mx-sm q-mb-sm">
-          <div class="row">
-            <q-img :src="player?.currentlyPlaying?.getFirstImage()" width="35px" class="rounded-borders" />
-            <div class="column non-selectable on-right" style="font-size: 12px">
-              <div class="row">
-                {{player?.currentlyPlaying?.name}}
-                <div class="q-ml-xs" v-show="usingOtherDevice">• {{player?.currentlyPlaying?.getFirstArtist()}}</div>
+        <div class="row no-wrap justify-between rounded-borders q-pa-xs q-mx-sm q-mb-sm">
+          <div class="col row no-wrap" style="overflow-x: hidden">
+            <q-img :src="player?.currentlyPlaying?.getFirstImage()" width="35px" class="col-auto rounded-borders" />
+            <div class="col column non-selectable on-right" style="font-size: 12px">
+              <div class="row no-wrap">
+                <div style="text-wrap: nowrap"  v-if="usingOtherDevice">
+                  {{player?.currentlyPlaying?.name}} • {{player?.currentlyPlaying?.getFirstArtist()}}
+                </div>
+                <div v-else>
+                  {{player?.currentlyPlaying?.name}}
+                </div>
               </div>
               <div class="text-primary" v-if="usingOtherDevice">
                 <q-icon name="volume_down" color="primary" class="primary-round q-mr-xs" />
@@ -49,10 +59,10 @@ const usingOtherDevice = computed(() => {
               </div>
             </div>
           </div>
-          <div class="row flex-center">
-            <DeviceButton />
-            <q-btn icon="check" color="primary" text-color="dark" size="8px" dense round  />
-            <q-btn text-color="secondary" icon="play_arrow" flat dense />
+          <div class="col-auto row no-wrap flex-center q-gutter-x-xs">
+            <DeviceButton class="q-mr-xs" />
+            <q-btn icon="check" color="primary" text-color="dark" size="6px" dense round  />
+            <q-icon :name="playIcon" class="cursor-pointer" text-color="secondary" size="sm" flat dense @click="player?.togglePlayer()" />
           </div>
         </div>
       </div>
@@ -75,5 +85,8 @@ const usingOtherDevice = computed(() => {
   top: 0;
   width: 100%;
   transform: translateY(-100%);
+}
+.player-container > div {
+  background: v-bind(activePrimaryColor);
 }
 </style>

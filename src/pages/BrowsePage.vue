@@ -7,7 +7,6 @@ const categories = ref([]);
 
 const fetchCategories = async () => {
   categories.value = await SpotifyWebAPI.Categories.GetBrowseCategories(20, 0);
-  console.log(categories.value);
 }
 
 fetchCategories();

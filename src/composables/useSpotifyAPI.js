@@ -1,5 +1,5 @@
 import { fetchSpotifyAPI } from "../services/spotify_api.js";
-import { player, spDevices, activeDevice, activePlaylist } from '../services/spotify_service.js'
+import { player, spDevices, activeDevice, activePlaylistId } from '../services/spotify_service.js'
 import SpCategory from "../model/SpCategory.js";
 import SpPlaylist from "../model/SpPlaylist.js";
 import {onMounted, onUnmounted, ref, watch} from "vue";
@@ -34,13 +34,13 @@ function useRefresh(refreshFunc, refreshInterval) {
 export function usePlaylist(id) {
     const playlist = ref(null);
     const onRefresh = async () => {
-        if (!id.value) {
+        if (id.value) {
+            const res = await SpotifyWebAPI.Playlists.GetPlaylist(id.value);
+            if (!SpError.IsError(res)) {
+                playlist.value = res;
+            }
+        } else {
             playlist.value = null;
-            return;
-        }
-        const res = await SpotifyWebAPI.Playlists.GetPlaylist(id.value);
-        if (!SpError.IsError(res)) {
-            playlist.value = res;
         }
     }
     const unwatch = watch(id, async () => {
@@ -81,7 +81,7 @@ export function usePlaylists(ids) {
 }
 
 export function useActivePlaylist() {
-    return usePlaylist(activePlaylist);
+    return usePlaylist(activePlaylistId);
 }
 
 export function useUserPlaylists() {
