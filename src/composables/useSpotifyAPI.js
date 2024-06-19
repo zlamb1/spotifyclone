@@ -4,6 +4,7 @@ import SpCategory from "../model/SpCategory.js";
 import SpPlaylist from "../model/SpPlaylist.js";
 import {onMounted, onUnmounted, ref, watch} from "vue";
 import SpError from "../model/SpError.js";
+import SpHistoryItem from "../model/SpHistoryItem.js";
 
 export function useSpotifyPlayer() {
     return player;
@@ -30,27 +31,53 @@ function useRefresh(refreshFunc, refreshInterval) {
     return clearId;
 }
 
-export function usePlaylist(url) {
+export function usePlaylist(id) {
     const playlist = ref(null);
     const onRefresh = async () => {
-        if (!url.value) {
+        if (!id.value) {
             playlist.value = null;
             return;
         }
-        const res = await SpotifyWebAPI.Playlists.GetPlaylist(url.value);
+        const res = await SpotifyWebAPI.Playlists.GetPlaylist(id.value);
         if (!SpError.IsError(res)) {
             playlist.value = res;
         }
     }
-    const unwatch = watch(url, async () => {
+    const unwatch = watch(id, async () => {
         await onRefresh();
     });
     const clearId = useRefresh(onRefresh, 15 * 1000);
     const unsub = () => {
-        if (clearId.value) clearInterval(clearId);
+        if (clearId.value) clearInterval(clearId.value);
         unwatch();
     }
     return { playlist, unsub };
+}
+
+export function usePlaylists(ids) {
+    const playlists = ref([]);
+    const onRefresh = async () => {
+        if (!ids.value) {
+            playlists.value = [];
+            return;
+        }
+        const found = [];
+        for (const id of ids.value) {
+            const res = await SpotifyWebAPI.Playlists.GetPlaylist(id);
+            if (!SpError.IsError(res)) found.push(res);
+        }
+        if (ids.value.length > 0 && found.length === 0) return;
+        playlists.value = found;
+    }
+    const unwatch = watch(ids, async () => {
+        await onRefresh();
+    });
+    const clearId = useRefresh(onRefresh, 30 * 1000);
+    const unsub = () => {
+        if (clearId.value) clearInterval(clearId.value);
+        unwatch();
+    }
+    return { playlists, unsub };
 }
 
 export function useActivePlaylist() {
@@ -205,6 +232,19 @@ export const SpotifyWebAPI = Object.freeze({
                 method: 'PUT',
             });
         },
+        GetRecentlyPlayedTracks: async (limit = 20, after, before) => {
+            const res = await fetchSpotifyAPI({
+                url: appendArgs('https://api.spotify.com/v1/me/player/recently-played', {
+                    limit: limit,
+                    after: after,
+                    before: before,
+                }),
+            });
+
+            return parseResponse(res, (json) => {
+                return json?.items?.map((item) => new SpHistoryItem(item));
+            })
+        },
     },
     Playlists: {
         GetPlaylist: async (playlistId) => {
@@ -212,9 +252,7 @@ export const SpotifyWebAPI = Object.freeze({
                 url: `https://api.spotify.com/v1/playlists/${playlistId}`,
             });
 
-            return parseResponse(res, (json) => {
-                return new SpPlaylist(json);
-            });
+            return parseResponse(res, (json) => new SpPlaylist(json))
         },
         GetCurrentUserPlaylists: async (limit, offset) => {
             const res = await fetchSpotifyAPI({

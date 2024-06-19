@@ -33,7 +33,7 @@ watch(devices, () => {
 
 <template>
   <q-btn icon="devices" :text-color="player.active ? 'primary' : 'accent-two'" dense>
-    <q-menu anchor="top middle" self="bottom middle" class="bg-accent text-secondary column q-pa-lg" ref="menu">
+    <q-menu anchor="top middle" self="bottom middle" class="bg-accent text-secondary column no-wrap q-pa-lg" ref="menu">
       <div class="row items-center q-gutter-x-md q-mb-md">
         <q-icon name="laptop_windows" size="md" :class="`text-${player.active ? 'primary' : 'secondary'}`" />
         <div class="column non-selectable">
@@ -61,7 +61,3 @@ watch(devices, () => {
     </q-menu>
   </q-btn>
 </template>
-
-<style scoped>
-
-</style>

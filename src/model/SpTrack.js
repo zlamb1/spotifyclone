@@ -1,7 +1,5 @@
 export default class SpTrack {
-    constructor(item, data) {
-        this.item = item;
-
+    constructor(data, item) {
         this.name = data.name;
         this.artists = data.artists;
         this.is_playable = data.is_playable;
@@ -9,13 +7,21 @@ export default class SpTrack {
         this.duration = data.duration_ms;
         this.id = data.id;
 
+        this.item = item;
+
         this.getUri = () => {
             return 'spotify:track:' + this.id;
         }
 
-        this.retrieveFirstImage = () => {
+        this.getFirstImage = () => {
             if (this.album?.images?.length > 0) {
                 return this.album.images[0].url;
+            }
+        }
+
+        this.getFirstArtist = () => {
+            if (this.artists?.length > 0) {
+                return this.artists[0].name;
             }
         }
 

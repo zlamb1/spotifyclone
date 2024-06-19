@@ -5,17 +5,14 @@ import {computed} from "vue";
 import {useQuasar} from "quasar";
 import {useActiveDevice, useSpotifyPlayer} from "../composables/useSpotifyAPI.js";
 
-import SongPreview from "./TrackPreview.vue";
 import ProgressBar from "./ProgressBar.vue";
 
 import ChangeStrategy from "../model/ChangeStrategy.js";
 import IconBtn from "./btn/IconBtn.vue";
 import DeviceBtn from "./btn/DeviceBtn.vue";
 import VolumeControl from "./control/VolumeControl.vue";
-import SpRepeatMode from "../model/SpRepeatMode.js";
 import RepeatControl from "./control/RepeatControl.vue";
 import TrackPreview from "./TrackPreview.vue";
-import PlaylistContextMenu from "./menu/PlaylistContextMenu.vue";
 import ArtistContextMenu from "./menu/ArtistContextMenu.vue";
 
 const player = useSpotifyPlayer();
@@ -52,22 +49,22 @@ const formatDuration = (duration) => {
         </TrackPreview>
       </div>
       <div class="column col-10 col-sm-4 col-md full-height justify-center">
-        <div class="row justify-center relative-position q-mb-sm q-gutter-x-sm">
+        <div class="row items-center justify-center relative-position q-mb-sm q-gutter-x-sm">
           <DeviceBtn class="absolute-left" v-show="screen.lt.sm" />
-          <IconBtn icon="shuffle" :icon-color="player.shuffle ? 'primary' : undefined" dense @click="player.toggleShuffle()" />
-          <IconBtn icon="skip_previous" icon-size="md" dense @click="player.prev()" />
-          <IconBtn :icon="computedPlayIcon" color="secondary" icon-color="dark" icon-size="md" round push @click="player.togglePlayer()" />
-          <IconBtn icon="skip_next" icon-size="md" dense @click="player.skip()" />
+          <IconBtn icon="shuffle" :icon-color="player.shuffle ? 'primary' : 'secondary-accent'" dense @click="player.toggleShuffle()" />
+          <IconBtn icon="skip_previous" icon-size="24px" icon-color="secondary-accent" dense @click="player.prev()" />
+          <IconBtn :icon="computedPlayIcon" color="secondary" icon-color="dark" icon-size="24px" size="10px" round push @click="player.togglePlayer()" />
+          <IconBtn icon="skip_next" icon-size="24px" icon-color="secondary-accent" dense @click="player.skip()" />
           <RepeatControl />
           <VolumeControl class="absolute-right" collapsed v-show="screen.lt.sm" />
         </div>
         <div class="row no-wrap q-gutter-x-sm">
-          <span class="non-selectable text-accent-two">{{formatDuration(player?.elapsed)}}</span>
+          <span class="non-selectable text-accent-two" v-show="player?.currentlyPlaying">{{formatDuration(player?.elapsed)}}</span>
           <ProgressBar :progress="player.getElapsedAsPercent()" @update="(newProgress) => player.setElapsedAsPercent(newProgress)"
                        style="width: 100%" :change-strategy="ChangeStrategy.Release"
                        color="accent-two" track-color="secondary" hover-track-color="primary"
                        knob-color="secondary" :debounce-duration="50" :disabled="!player.currentlyPlaying" />
-          <span class="non-selectable text-accent-two">{{formatDuration(player?.currentlyPlaying?.duration)}}</span>
+          <span class="non-selectable text-accent-two" v-show="player?.currentlyPlaying">{{formatDuration(player?.currentlyPlaying?.duration)}}</span>
         </div>
       </div>
       <div class="col-4 row items-center" v-show="screen.gt.xs">

@@ -27,8 +27,10 @@ import PlaylistPage from "./pages/PlaylistPage.vue";
 
 const routes = [
     { path: '/', component: HomePage },
+    { path: '/library', component: HomePage },
+    { path: '/search', component: HomePage },
     { path: '/browse', component: BrowsePage },
-    { path: '/playlist/:id', component: PlaylistPage },
+    { path: '/playlist/:id', name: 'playlist', component: PlaylistPage },
     { path: '/track/:id', name: 'track', component: HomePage },
     { path: '/artist/:id', name: 'artist', component: HomePage },
     { path: '/album/:id', name: 'album', component: HomePage }

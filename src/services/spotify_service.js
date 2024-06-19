@@ -80,6 +80,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
     player.value.connect();
+
+    window.onbeforeunload = () => {
+        player.value?.disconnect();
+    }
 }
 
 const apiScript = document.createElement("script");
@@ -137,7 +141,7 @@ async function queryPlayerState() {
 
             const type = SpType.FromSpotifyAPI(currently_playing_type);
             if (type === SpType.Track) {
-                player.value.currentlyPlaying = new SpTrack({added_at: null, added_by: null, is_loca: item.local}, item);
+                player.value.currentlyPlaying = new SpTrack(item, {is_local: item.local});
             }
         } catch (err) {
             console.warn('[SpotifyService]: Failed to parse player state JSON: ', err);

@@ -3,6 +3,10 @@
 import {RouterView} from "vue-router";
 import {useIsMobile, useDynamicComponent} from "./composables/useDynamicComponent.js";
 import {provide} from "vue";
+import {useUserPlaylists} from "./composables/useSpotifyAPI.js";
+
+const userPlaylists = useUserPlaylists();
+provide('userPlaylists', userPlaylists);
 
 const isMobile = useIsMobile();
 provide('isMobile', isMobile);

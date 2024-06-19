@@ -1,8 +1,11 @@
 <script setup>
 
+import {useDynamicComponent} from "../composables/useDynamicComponent.js";
+
+const HomeView = useDynamicComponent('view/HomeView');
+
 </script>
 
 <template>
-  <div class="col bg-dark-accent rounded-borders q-px-lg">
-  </div>
+  <HomeView />
 </template>

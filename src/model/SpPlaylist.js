@@ -10,7 +10,13 @@ export default class SpPlaylist {
         this.public = data.public;
         this.href = data.external_urls.spotify;
 
-        this.tracks = data?.tracks?.items?.map((item) => new SpTrack(new SpItem(item), item.track));
+        this.tracks = data?.tracks?.items?.map((item) => new SpTrack(item.track, new SpItem(item)));
+
+        this.getFirstImage = () => {
+            if (this.images?.length > 0) {
+                return this.images[0].url;
+            }
+        }
 
         this.getDuration = () => {
             if (!this.tracks) return '';

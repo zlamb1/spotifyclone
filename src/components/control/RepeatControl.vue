@@ -12,5 +12,5 @@ const player = useSpotifyPlayer();
 
 <template>
   <IconBtn :icon="player.repeatMode === SpRepeatMode.Track ? 'repeat_one' : 'repeat'"
-           :icon-color="player.repeatMode !== SpRepeatMode.Off ? 'primary' : undefined" dense @click="player.toggleRepeatMode()" />
+           :icon-color="player.repeatMode !== SpRepeatMode.Off ? 'primary' : 'secondary-accent'" dense @click="player.toggleRepeatMode()" />
 </template>

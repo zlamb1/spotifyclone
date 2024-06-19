@@ -2,16 +2,14 @@
 
 import SpHeader from "../components/SpHeader.vue";
 import SpFooter from "../components/SpFooter.vue";
-import {useUserPlaylists} from "../composables/useSpotifyAPI.js";
 import PlaylistThumbnail from "../components/thumbnail/PlaylistThumbnail.vue";
-import {computed, provide, ref} from "vue";
+import {computed, inject, provide, ref} from "vue";
 
 import {activePlaylist} from "../services/spotify_service.js";
 
-const userPlaylists = useUserPlaylists();
+const userPlaylists = inject('userPlaylists');
 
 const offset = ref(0);
-
 const calcPageHeight = computed(() => {
   return `calc(-${offset.value}px + 100vh)`;
 });
@@ -21,9 +19,6 @@ const styleFn = (_offset) => {
   return { minHeight: _offset ? `calc(100vh - ${_offset}px)` : '100vh' }
 }
 
-provide('userPlaylists', userPlaylists);
-
-provide('pageOffset', offset);
 provide('calcPageHeight', calcPageHeight);
 
 </script>

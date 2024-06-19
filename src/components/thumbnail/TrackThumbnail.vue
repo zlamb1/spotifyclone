@@ -12,7 +12,7 @@ const props = defineProps({
 const error = ref(false);
 
 watch(() => props.track, () => {
-  error.value = !props.track?.retrieveFirstImage();
+  error.value = !props.track?.getFirstImage();
 });
 
 </script>
@@ -20,7 +20,7 @@ watch(() => props.track, () => {
 <template>
   <q-avatar color="accent" rounded>
     <q-icon name="music_note" v-if="error" />
-    <q-img :src="track?.retrieveFirstImage()" @load="error = false" @error="error = true" v-else>
+    <q-img :src="track?.getFirstImage()" @load="error = false" @error="error = true" v-else>
       <template #loading>
         <q-spinner size="md" color="primary" />
       </template>
