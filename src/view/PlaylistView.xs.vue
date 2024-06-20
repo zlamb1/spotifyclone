@@ -4,9 +4,12 @@ import {useSpotifyPlayer} from "../composables/useSpotifyAPI.js";
 import {inject} from "vue";
 import TrackThumbnail from "../components/thumbnail/TrackThumbnail.vue";
 import {useRouter} from "vue-router";
+import PlaylistThumbnail from "../components/thumbnail/PlaylistThumbnail.vue";
 
+const router = useRouter();
 const player = useSpotifyPlayer();
 
+const pageOffset = inject('pageOffset');
 const playlist = inject('playlist');
 
 const defaultColor = inject('defaultColor');
@@ -16,19 +19,17 @@ const isTrackPlaying = (track) => {
   return player.value?.currentlyPlaying?.id === track?.id;
 }
 
-const router = useRouter();
-
 </script>
 
 <template>
-  <div class="container column no-wrap q-px-md">
+  <div class="container column no-wrap q-px-md" :style="`padding-bottom: ${pageOffset}px`">
     <div class="flex flex-center q-ma-sm">
       <div class="back-arrow">
         <q-btn icon="arrow_back" flat dense round @click="router.go(-1)" />
       </div>
       <q-responsive style="width: 40vw" ratio="1">
         <q-skeleton type="rect" class="fit" v-show="playlist?.loading" />
-        <q-img class="fit shadow-3" :src="playlist?.getFirstImage?.()" v-show="!playlist?.loading" />
+        <PlaylistThumbnail class="fit shadow-3" icon-size="100px" :playlist="playlist" v-show="!playlist?.loading" />
       </q-responsive>
     </div>
     <div class="text-h5 non-selectable">

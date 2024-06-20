@@ -10,6 +10,8 @@ import DeviceButton from "../components/btn/DeviceButton.xs.vue";
 const activePrimaryColor = inject('activePrimaryColor');
 
 const offset = ref(0);
+provide('pageOffset', offset);
+
 const calcPageHeight = computed(() => {
   return `calc(-${offset.value}px + 100vh)`;
 });
@@ -31,14 +33,9 @@ const playIcon = usePlayIcon();
 
 <template>
   <q-layout class="fullscreen bg-accent" view="hHh lpR fFf">
-    <q-footer class="transparent">
-      <q-tabs class="tabs flex bg-transparent text-accent-two" indicator-color="transparent" active-color="secondary" dense>
-        <q-route-tab to="/" name="home" icon="home" style="font-size: 10px" no-caps>Home</q-route-tab>
-        <q-route-tab to="/search" name="search" icon="search" style="font-size: 10px" no-caps>Search</q-route-tab>
-        <q-route-tab to="/library" name="library" icon="library_music" style="font-size: 10px" no-caps>Your Library</q-route-tab>
-      </q-tabs>
+    <q-footer class="bg-transparent">
       <div class="player-container" v-show="player?.currentlyPlaying">
-        <div class="row no-wrap justify-between rounded-borders q-pa-xs q-mx-sm q-mb-sm">
+        <div class="row no-wrap justify-between rounded-borders q-pa-xs q-mx-sm">
           <div class="col row no-wrap" style="overflow-x: hidden">
             <q-img :src="player?.currentlyPlaying?.getFirstImage()" width="35px" class="col-auto rounded-borders" />
             <div class="col column non-selectable on-right" style="font-size: 12px">
@@ -66,6 +63,11 @@ const playIcon = usePlayIcon();
           </div>
         </div>
       </div>
+      <q-tabs class="tabs q-py-xs flex text-accent-two" indicator-color="transparent" active-color="secondary" dense>
+        <q-route-tab to="/" name="home" icon="home" style="font-size: 10px" no-caps>Home</q-route-tab>
+        <q-route-tab to="/search" name="search" icon="search" style="font-size: 10px" no-caps>Search</q-route-tab>
+        <q-route-tab to="/library" name="library" icon="library_music" style="font-size: 10px" no-caps>Your Library</q-route-tab>
+      </q-tabs>
     </q-footer>
     <q-page-container>
       <q-page :style-fn="styleFn">
@@ -76,25 +78,12 @@ const playIcon = usePlayIcon();
 </template>
 
 <style scoped>
-.tabs::before {
-  content: '';
-  background: rgba(0, 0, 0, 0.9);
-  filter: brightness(20%);
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+.tabs {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 1) 60%);
 }
 .primary-round {
   border: 1px solid var(--q-primary);
   border-radius: 50%;
-}
-.player-container {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  transform: translateY(-100%);
 }
 .player-container > div {
   background: v-bind(activePrimaryColor);

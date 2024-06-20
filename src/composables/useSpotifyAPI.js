@@ -21,26 +21,26 @@ export function useActiveDevice() {
 function useRefresh(refreshFunc, refreshInterval) {
     const clearId = ref(0);
     onMounted(() => {
-        clearId.value = setInterval(refreshFunc, refreshInterval);
+        clearId.value = setInterval(() => refreshFunc(false), refreshInterval);
     });
     onUnmounted(() => {
        clearInterval(clearId.value);
        clearId.value = undefined;
     });
-    refreshFunc();
+    refreshFunc(true);
     return clearId;
 }
 
 export function usePlaylist(id) {
     const playlist = ref({loading: true});
-    const onRefresh = async () => {
+    const onRefresh = async (firstLoad) => {
         if (id.value) {
-            if (playlist.value) playlist.value.loading = true;
+            if (playlist.value) playlist.value.loading = firstLoad;
             const res = await SpotifyWebAPI.Playlists.GetPlaylist(id.value);
             if (!SpError.IsError(res)) playlist.value = res;
         } else playlist.value = {loading: false};
     }
-    const unwatch = watch(id, async () => await onRefresh());
+    const unwatch = watch(id, async () => await onRefresh(true));
     const clearId = useRefresh(onRefresh, 15 * 1000);
     const unsub = () => {
         if (clearId.value) clearInterval(clearId.value);
@@ -51,22 +51,22 @@ export function usePlaylist(id) {
 
 export function usePlaylists(ids) {
     const playlists = ref([]);
-    const onRefresh = async () => {
-        if (!ids.value) {
+    playlists.value.loading = true;
+    const onRefresh = async (firstLoad) => {
+        if (ids.value) {
+            if (playlists.value) playlists.value.loading = firstLoad;
+            const found = [];
+            for (const id of ids.value) {
+                const res = await SpotifyWebAPI.Playlists.GetPlaylist(id);
+                if (!SpError.IsError(res)) found.push(res);
+            }
+            if (ids.value.length > 0 && found.length === 0) return;
+            playlists.value = found;
+        } else {
             playlists.value = [];
-            return;
         }
-        const found = [];
-        for (const id of ids.value) {
-            const res = await SpotifyWebAPI.Playlists.GetPlaylist(id);
-            if (!SpError.IsError(res)) found.push(res);
-        }
-        if (ids.value.length > 0 && found.length === 0) return;
-        playlists.value = found;
     }
-    const unwatch = watch(ids, async () => {
-        await onRefresh();
-    });
+    const unwatch = watch(ids, async () => await onRefresh(true));
     const clearId = useRefresh(onRefresh, 30 * 1000);
     const unsub = () => {
         if (clearId.value) clearInterval(clearId.value);

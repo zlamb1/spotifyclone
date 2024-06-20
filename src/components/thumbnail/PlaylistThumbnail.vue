@@ -1,31 +1,39 @@
 <script setup>
 
-import SpPlaylist from "../../model/SpPlaylist.js";
-import {computed} from "vue";
+import {ref, watch} from "vue";
 
 const props = defineProps({
   playlist: {
-    type: SpPlaylist,
-    required: true,
+    type: Object,
+  },
+  icon: {
+    type: String,
+    default: 'o_album',
   },
   iconSize: {
     type: String,
   },
 });
 
-const url = computed(() => {
-  if (props.playlist?.images?.length > 0) {
-    return props.playlist?.images[0].url;
-  }
+const noImage = ref(!props.playlist?.getFirstImage?.());
+
+watch(() => props.playlist, () => {
+  noImage.value = !props.playlist?.getFirstImage?.();
 });
 
 </script>
 
 <template>
-  <q-avatar rounded>
-    <q-img :src="url" v-if="url">
+  <q-avatar :class="noImage ? 'bg-accent' : ''" rounded>
+    <q-icon :name="icon" :size="iconSize" v-show="noImage" />
+    <q-img :src="playlist?.getFirstImage?.()" v-show="!noImage">
+      <template #loading>
+        <q-spinner color="primary" />
+      </template>
+      <template #error>
+        <q-icon :name="icon" :size="iconSize" />
+      </template>
       <slot />
     </q-img>
-    <q-icon name="music_note" :size="iconSize" v-else />
   </q-avatar>
 </template>
