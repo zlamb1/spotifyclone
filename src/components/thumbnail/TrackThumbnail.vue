@@ -8,7 +8,7 @@ const props = defineProps({
   }
 });
 
-const noImage = ref(false);
+const noImage = ref(!props.track?.getFirstImage?.());
 
 watch(() => props.track, () => {
   noImage.value = !props.track?.getFirstImage?.();

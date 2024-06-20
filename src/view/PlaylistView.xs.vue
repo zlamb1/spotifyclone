@@ -46,7 +46,7 @@ const isTrackPlaying = (track) => {
       <div style="font-size: 12px">{{playlist?.getDuration?.()}}</div>
     </div>
     <div class="column no-wrap non-selectable q-my-md q-gutter-y-sm">
-      <div class="row items-center cursor-pointer q-gutter-x-sm" v-for="track in playlist?.tracks" :key="track.id">
+      <div class="row items-center cursor-pointer q-gutter-x-sm" v-for="track in playlist?.tracks" :key="track?.id" :disabled="track?.id ? undefined : true">
         <TrackThumbnail class="rounded-borders" width="35px" ratio="1" :track="track" />
         <div class="overflow-container col column justify-center">
           <div class="prevent-overflow" :class="isTrackPlaying(track) ? 'text-primary' : 'text-secondary'">
@@ -68,7 +68,7 @@ const isTrackPlaying = (track) => {
 <style scoped>
 .container {
   position: relative;
-  background: linear-gradient(to bottom, v-bind(primaryColor), v-bind(defaultColor) 250px);
+  background: linear-gradient(to bottom, v-bind(primaryColor), v-bind(defaultColor) 250px) local;
   height: 100vh;
   overflow-y: scroll;
 }

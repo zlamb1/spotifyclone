@@ -18,7 +18,7 @@ provide('activePrimaryColor', activePrimaryColor)
 const findPrimaryColor = usePrimaryColor();
 
 watch(activePlaylist, () => {
-  const url = activePlaylist.value?.getFirstImage();
+  const url = activePlaylist.value?.getFirstImage?.();
   if (!url) activePrimaryColor.value = defaultColor;
   else {
     findPrimaryColor(url, (rgb) => activePrimaryColor.value = rgb);
