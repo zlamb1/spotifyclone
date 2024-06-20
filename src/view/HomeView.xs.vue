@@ -78,7 +78,7 @@ const isHoveringCarousel = ref(false);
                   @mouseenter="isHoveringCarousel = true" @mouseleave="isHoveringCarousel = false">
         <q-carousel-slide class="row q-col-gutter-sm q-pa-none" :name="index" v-for="(tracks, index) in computedTracks">
           <div v-for="track in tracks" class="col-4">
-            <RouterLink to="/" class="text-secondary" style="text-decoration: none">
+            <RouterLink to="/" class="column q-gutter-y-xs text-secondary" style="text-decoration: none">
               <q-img :src="track.getFirstImage()" ratio="1" />
               <div class="ellipsis-hide" style="max-width: 30vw">{{track.name}}</div>
             </RouterLink>

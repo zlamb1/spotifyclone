@@ -1,4 +1,4 @@
-import {computed, defineAsyncComponent} from "vue";
+import {computed, defineAsyncComponent, ref, shallowRef, watch} from "vue";
 import {useQuasar} from "quasar";
 
 const BREAKPOINTS = [ 'xs', 'sm', 'md', 'lg', 'xl' ];
@@ -10,8 +10,11 @@ export function useIsMobile() {
 
 export function useDynamicComponent(routes) {
     const $q = useQuasar();
-    return computed(() => {
-        const breakpoint = $q.screen.name;
+
+    const currentRoute = ref('');
+    const dynamicComponent = shallowRef();
+
+    const resolveRoute = (breakpoint) => {
         const index = BREAKPOINTS.indexOf(breakpoint);
         if (index < 0) {
             console.error(`Failed to resolve dynamic component due to invalid breakpoint: ${breakpoint}`);
@@ -20,12 +23,23 @@ export function useDynamicComponent(routes) {
             for (let i = index; i >= 0; i--) {
                 const current = BREAKPOINTS[i];
                 if (routes[current]) {
-                    return defineAsyncComponent(() => import('../' + routes[current] + '.vue'));
+                    if (currentRoute.value === routes[current]) return;
+                    currentRoute.value = routes[current];
+                    dynamicComponent.value = defineAsyncComponent(() => import('../' + routes[current] + '.vue'));
+                    return;
                 }
             }
 
-            console.error(`Incorrectly configured component: ${routes}`);
+            console.error(`Incorrectly configured component: `, routes);
             return null;
         }
+    }
+
+    const breakpoint = computed(() => $q.screen.name);
+    resolveRoute(breakpoint.value);
+    watch(breakpoint, () => {
+        resolveRoute(breakpoint.value)
     });
+
+    return dynamicComponent;
 }

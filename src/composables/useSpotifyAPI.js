@@ -32,20 +32,15 @@ function useRefresh(refreshFunc, refreshInterval) {
 }
 
 export function usePlaylist(id) {
-    const playlist = ref(null);
+    const playlist = ref({loading: true});
     const onRefresh = async () => {
         if (id.value) {
+            if (playlist.value) playlist.value.loading = true;
             const res = await SpotifyWebAPI.Playlists.GetPlaylist(id.value);
-            if (!SpError.IsError(res)) {
-                playlist.value = res;
-            }
-        } else {
-            playlist.value = null;
-        }
+            if (!SpError.IsError(res)) playlist.value = res;
+        } else playlist.value = {loading: false};
     }
-    const unwatch = watch(id, async () => {
-        await onRefresh();
-    });
+    const unwatch = watch(id, async () => await onRefresh());
     const clearId = useRefresh(onRefresh, 15 * 1000);
     const unsub = () => {
         if (clearId.value) clearInterval(clearId.value);

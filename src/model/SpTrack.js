@@ -25,6 +25,12 @@ export default class SpTrack {
             }
         }
 
+        this.getFormattedArtists = () => {
+            let str = '';
+            this?.artists?.forEach((artist, index) => str += artist.name + (index !== this?.artists?.length - 1 ? ', ' : ''));
+            return str;
+        }
+
         this.getFormattedDuration = () => {
             const duration = this.duration ?? 0;
             const seconds = Math.floor(duration / 1000) % 60;

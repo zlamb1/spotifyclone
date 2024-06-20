@@ -30,9 +30,9 @@ const playIcon = usePlayIcon();
 </script>
 
 <template>
-  <q-layout class="fullscreen bg-dark" view="hHh lpR fFf">
-    <q-footer>
-      <q-tabs class="flex bg-dark text-accent-two" indicator-color="transparent" active-color="secondary" dense>
+  <q-layout class="fullscreen bg-accent" view="hHh lpR fFf">
+    <q-footer class="transparent">
+      <q-tabs class="tabs flex bg-transparent text-accent-two" indicator-color="transparent" active-color="secondary" dense>
         <q-route-tab to="/" name="home" icon="home" style="font-size: 10px" no-caps>Home</q-route-tab>
         <q-route-tab to="/search" name="search" icon="search" style="font-size: 10px" no-caps>Search</q-route-tab>
         <q-route-tab to="/library" name="library" icon="library_music" style="font-size: 10px" no-caps>Your Library</q-route-tab>
@@ -43,7 +43,7 @@ const playIcon = usePlayIcon();
             <q-img :src="player?.currentlyPlaying?.getFirstImage()" width="35px" class="col-auto rounded-borders" />
             <div class="col column non-selectable on-right" style="font-size: 12px">
               <div class="row no-wrap">
-                <div style="text-wrap: nowrap"  v-if="usingOtherDevice">
+                <div style="text-wrap: nowrap" v-if="usingOtherDevice">
                   {{player?.currentlyPlaying?.name}} • {{player?.currentlyPlaying?.getFirstArtist()}}
                 </div>
                 <div v-else>
@@ -67,7 +67,7 @@ const playIcon = usePlayIcon();
         </div>
       </div>
     </q-footer>
-    <q-page-container class="bg-red">
+    <q-page-container>
       <q-page :style-fn="styleFn">
         <slot />
       </q-page>
@@ -76,6 +76,16 @@ const playIcon = usePlayIcon();
 </template>
 
 <style scoped>
+.tabs::before {
+  content: '';
+  background: rgba(0, 0, 0, 0.9);
+  filter: brightness(20%);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
 .primary-round {
   border: 1px solid var(--q-primary);
   border-radius: 50%;

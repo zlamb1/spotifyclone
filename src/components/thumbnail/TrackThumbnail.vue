@@ -1,7 +1,7 @@
 <script setup>
 
-import {ref, watch} from "vue";
 import SpTrack from "../../model/SpTrack.js";
+import {ref, watch} from "vue";
 
 const props = defineProps({
   track: {
@@ -9,20 +9,23 @@ const props = defineProps({
   }
 });
 
-const error = ref(false);
+const noImage = ref(false);
 
 watch(() => props.track, () => {
-  error.value = !props.track?.getFirstImage();
+  noImage.value = !props.track?.getFirstImage();
 });
 
 </script>
 
 <template>
   <q-avatar color="accent" rounded>
-    <q-icon name="music_note" v-if="error" />
-    <q-img :src="track?.getFirstImage()" @load="error = false" @error="error = true" v-else>
+    <q-icon name="music_note" class="text-secondary-accent" v-if="noImage" />
+    <q-img :src="track?.getFirstImage()" v-else>
       <template #loading>
         <q-spinner size="md" color="primary" />
+      </template>
+      <template #error>
+        <q-icon name="music_note" class="text-secondary-accent" />
       </template>
     </q-img>
   </q-avatar>
