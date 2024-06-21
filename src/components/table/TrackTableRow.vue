@@ -28,7 +28,7 @@ const formatDate = (date) => {
 }
 
 const isPlaying = (id) => {
-  return player.value?.currentlyPlaying?.id === id;
+  return player.value?.playingItem?.id === id;
 }
 
 const isActive = (id) => {

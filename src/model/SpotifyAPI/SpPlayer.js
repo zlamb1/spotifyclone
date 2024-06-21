@@ -17,7 +17,7 @@ export default class SpPlayer {
         this.name = 'SpotifyLite';
         this.playing = false;
         this.elapsed = 0;
-        this.currentlyPlaying = null;
+        this.playingItem = null;
         this.shuffle = false;
         this.repeatMode = SpRepeatMode.Off;
 
@@ -131,11 +131,15 @@ export default class SpPlayer {
             }
         }
 
-        this.playPlaylist = async function(playlist, offset) {
-            let deviceId = this.id;
-            if (!this.id || activeDevice.value) deviceId = undefined;
-
+        this.playPlaylist = async function(playlist, track) {
             if (!playlist?.id) return ArgWarn('playPlaylist', 'playlist');
+            const uri = track?.getUri?.();
+            if (uri) {
+                this.debounceProp('playingItem');
+                this.playingItem = track;
+            }
+            const deviceId = (!this.id || activeDevice.value) ? undefined : this.id;
+            const offset = uri ? {uri: uri} : undefined;
             return this.callWebAPI(() => SpotifyWebAPI.Player.StartPlayback(deviceId, {
                 'context_uri': 'spotify:playlist:' + playlist.id,
                 offset: offset,
@@ -144,6 +148,8 @@ export default class SpPlayer {
 
         this.playTrack = async function(track) {
             if (!track?.id) return ArgWarn('playTrack', 'track');
+            this.debounceProp('playingItem', 3 * 1000);
+            this.playingItem = track;
             return this.callWebAPI(() => SpotifyWebAPI.Player.StartPlayback(undefined, {uris: ['spotify:track:' + track?.id]}), 500);
         }
 
@@ -191,8 +197,8 @@ export default class SpPlayer {
 
         this.setElapsedAsPercent = async function(percentage) {
             percentage = percentage ?? 0;
-            if (this.currentlyPlaying) {
-                const duration = this.currentlyPlaying.duration;
+            if (this.playingItem) {
+                const duration = this.playingItem.duration;
                 // sanity-check percentage so that it is in range [0.0 - 1.0]
                 // then seek to the new position
                 this.elapsed = duration * Math.max(Math.min(percentage, 1), 0);
@@ -201,11 +207,11 @@ export default class SpPlayer {
         }
 
         this.getElapsedAsPercent = function() {
-            if (!this.ready || !this.currentlyPlaying) {
+            if (!this.ready || !this.playingItem) {
                 return 0;
             }
 
-            const duration = this.currentlyPlaying.duration;
+            const duration = this.playingItem.duration;
             return this.elapsed / duration;
         }
 
@@ -225,7 +231,7 @@ export default class SpPlayer {
             return !!this.debouncedProps[propName];
         }
 
-        this.debounceProp = (propName) => {
+        this.debounceProp = (propName, debounceDuration = this.debounceDuration) => {
             // used to minimize desync between clients while using the Web API
             if (this.preferWebAPI) {
                 if (this.debouncedProps[propName]) {
@@ -233,7 +239,7 @@ export default class SpPlayer {
                 }
                 this.debouncedProps[propName] = setTimeout(() => {
                     this.debouncedProps[propName] = undefined;
-                }, this.debounceDuration);
+                }, debounceDuration);
                 return true;
             }
         }

@@ -17,17 +17,17 @@ const defaultColor = inject('defaultColor');
 const primaryColor = inject('primaryColor');
 
 const onPlayTrack = (track) => {
-  if (player.value?.currentlyPlaying?.id === track?.id) {
-    player.value?.seek(0);
-  } else {
-    player.value?.playPlaylist(playlist.value, {
-      uri: track?.getUri(),
-    });
+  if (track.id) {
+    if (player.value?.playingItem?.id === track?.id) {
+      player.value?.seek(0);
+    } else {
+      player.value?.playPlaylist(playlist.value, track);
+    }
   }
 }
 
 const isTrackPlaying = (track) => {
-  return player.value?.currentlyPlaying?.id === track?.id;
+  return player.value?.playingItem?.id === track?.id;
 }
 
 </script>

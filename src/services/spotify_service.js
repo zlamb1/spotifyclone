@@ -138,11 +138,8 @@ async function queryPlayerState() {
             if (!player.value.isDebounced('elapsed')) player.value.elapsed = progress_ms;
             if (!player.value.isDebounced('shuffle')) player.value.shuffle = shuffle_state;
             if (!player.value.isDebounced('repeatMode')) player.value.repeatMode = SpRepeatMode.FromSpotifyAPI(repeat_state);
+            if (!player.value.isDebounced('playingItem')) player.value.playingItem = new SpTrack(item, {is_local: item.local});
 
-            const type = SpType.FromSpotifyAPI(currently_playing_type);
-            if (type === SpType.Track) {
-                player.value.currentlyPlaying = new SpTrack(item, {is_local: item.local});
-            }
         } catch (err) {
             console.warn('[SpotifyService]: Failed to parse player state JSON: ', err);
         }
@@ -161,14 +158,14 @@ document.addEventListener('visibilitychange', async () => {
 
 // setup polling
 const criticalPollRate = 5 * 1000;
-player.value.debounceDuration = 2000;
+player.value.debounceDuration = 3 * 1000;
 
 const nonCriticalPollRate = 15 * 1000;
 
 // solution to continue tracking elapsed time
 const trackInterval = 250;
 setInterval(() => {
-    if (player.value.playing && (player.value.elapsed + trackInterval) <= player.value?.currentlyPlaying?.duration) {
+    if (player.value.playing && (player.value.elapsed + trackInterval) <= player.value?.playingItem?.duration) {
         player.value.elapsed += trackInterval;
     }
 }, trackInterval);

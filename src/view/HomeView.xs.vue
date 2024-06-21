@@ -109,7 +109,7 @@ const isHoveringCarousel = ref(false);
 
 <style scoped>
 .container {
-  min-height: inherit;
+  min-height: 100vh;
 }
 .carousel {
   height: fit-content;

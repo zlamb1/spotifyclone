@@ -42,7 +42,7 @@ const formatDuration = (duration) => {
   <q-footer>
     <div class="row justify-center q-py-sm q-px-md">
       <div class="col-4" v-show="screen.gt.xs">
-        <TrackPreview :track="player.currentlyPlaying" v-if="player?.currentlyPlaying">
+        <TrackPreview :track="player.playingItem" v-if="player?.playingItem">
           <template #artist-link>
             <ArtistContextMenu />
           </template>
@@ -59,12 +59,12 @@ const formatDuration = (duration) => {
           <VolumeControl class="absolute-right" collapsed v-show="screen.lt.sm" />
         </div>
         <div class="row no-wrap q-gutter-x-sm">
-          <span class="non-selectable text-accent-two" v-show="player?.currentlyPlaying">{{formatDuration(player?.elapsed)}}</span>
+          <span class="non-selectable text-accent-two" v-show="player?.playingItem">{{formatDuration(player?.elapsed)}}</span>
           <ProgressBar :progress="player.getElapsedAsPercent()" @update="(newProgress) => player.setElapsedAsPercent(newProgress)"
                        style="width: 100%" :change-strategy="ChangeStrategy.Release"
                        color="accent-two" track-color="secondary" hover-track-color="primary"
-                       knob-color="secondary" :debounce-duration="50" :disabled="!player.currentlyPlaying" />
-          <span class="non-selectable text-accent-two" v-show="player?.currentlyPlaying">{{formatDuration(player?.currentlyPlaying?.duration)}}</span>
+                       knob-color="secondary" :debounce-duration="50" :disabled="!player.playingItem" />
+          <span class="non-selectable text-accent-two" v-show="player?.playingItem">{{formatDuration(player?.playingItem?.duration)}}</span>
         </div>
       </div>
       <div class="col-4 row items-center" v-show="screen.gt.xs">

@@ -29,22 +29,27 @@ const usingOtherDevice = computed(() => {
 
 const playIcon = usePlayIcon();
 
+const percentage = computed(() => {
+  if (!player.value?.playingItem?.duration) return '0%';
+  return 100 - (player.value?.elapsed / player.value?.playingItem?.duration * 100).toFixed(4) + '%';
+});
+
 </script>
 
 <template>
   <q-layout class="fullscreen bg-accent" view="hHh lpR fFf">
     <q-footer class="bg-transparent">
-      <div class="player-container" v-show="player?.currentlyPlaying">
+      <div class="player-container" v-show="player?.playingItem">
         <div class="row no-wrap justify-between rounded-borders q-pa-xs q-mx-sm">
           <div class="col row no-wrap" style="overflow-x: hidden">
-            <q-img :src="player?.currentlyPlaying?.getFirstImage()" width="35px" class="col-auto rounded-borders" />
+            <q-img :src="player?.playingItem?.getFirstImage()" width="35px" class="col-auto rounded-borders" />
             <div class="col column non-selectable on-right" style="font-size: 12px">
               <div class="row no-wrap">
                 <div class="text-secondary" style="text-wrap: nowrap" v-if="usingOtherDevice">
-                  {{player?.currentlyPlaying?.name}} • {{player?.currentlyPlaying?.getFirstArtist()}}
+                  {{player?.playingItem?.name}} • {{player?.playingItem?.getFirstArtist()}}
                 </div>
                 <div class="text-secondary" v-else>
-                  {{player?.currentlyPlaying?.name}}
+                  {{player?.playingItem?.name}}
                 </div>
               </div>
               <div class="text-primary" v-if="usingOtherDevice">
@@ -52,7 +57,7 @@ const playIcon = usePlayIcon();
                 {{activeDevice?.name}}
               </div>
               <div class="artist text-secondary-accent" v-else>
-                {{player?.currentlyPlaying?.getFirstArtist()}}
+                {{player?.playingItem?.getFirstArtist()}}
               </div>
             </div>
           </div>
@@ -85,12 +90,24 @@ const playIcon = usePlayIcon();
   border: 1px solid var(--q-primary);
   border-radius: 50%;
 }
+.player-container > div::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: v-bind(percentage);
+  bottom: 0;
+  height: 1px;
+  background: var(--q-secondary);
+  border-radius: 50%;
+  margin-left: 1px;
+  margin-right: 1px;
+}
 .player-container > div {
+  position: relative;
   background: v-bind(activePrimaryColor);
   transition: background-color 0.3s ease-in-out;
 }
 .artist {
   --shadow-color: rgba(0, 0, 0, 0.4);
-
 }
 </style>
