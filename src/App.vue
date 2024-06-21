@@ -6,6 +6,7 @@ import {provide, ref, watch} from "vue";
 import {usePlaylist, useUserPlaylists} from "./composables/useSpotifyAPI.js";
 import {activePlaylistId} from "./services/spotify_service.js";
 import usePrimaryColor from "./composables/usePrimaryColor.js";
+import tinycolor from "tinycolor2";
 
 const activePlaylist = usePlaylist(activePlaylistId).playlist;
 provide('activePlaylist', activePlaylist);
@@ -21,7 +22,10 @@ watch(activePlaylist, () => {
   const url = activePlaylist.value?.getFirstImage?.();
   if (!url) activePrimaryColor.value = defaultColor;
   else {
-    findPrimaryColor(url, (rgb) => activePrimaryColor.value = rgb);
+    findPrimaryColor(url, (rgb) => {
+      const color = tinycolor(rgb).darken(20).desaturate();
+      activePrimaryColor.value = color.toHexString();
+    });
   }
 });
 

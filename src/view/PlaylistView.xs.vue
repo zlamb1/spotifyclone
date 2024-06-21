@@ -5,6 +5,7 @@ import {inject} from "vue";
 import TrackThumbnail from "../components/thumbnail/TrackThumbnail.vue";
 import {useRouter} from "vue-router";
 import PlaylistThumbnail from "../components/thumbnail/PlaylistThumbnail.vue";
+import PlayControl from "../components/control/PlaylistControl.vue";
 
 const router = useRouter();
 const player = useSpotifyPlayer();
@@ -32,18 +33,26 @@ const isTrackPlaying = (track) => {
         <PlaylistThumbnail class="fit shadow-3" icon-size="100px" :playlist="playlist" v-show="!playlist?.loading" />
       </q-responsive>
     </div>
-    <div class="text-h5 non-selectable">
-      <q-skeleton type="text" style="width: 50%" v-show="playlist?.loading" />
-      {{playlist?.name}}
-    </div>
-    <div class="non-selectable">
-      <q-skeleton type="text" style="width: 20%" v-show="playlist?.loading" />
-      {{playlist?.owner?.display_name}}
-    </div>
-    <div class="row items-center text-accent-two q-gutter-x-xs">
-      <q-icon name="language" />
-      <q-skeleton type="text" style="width: 20%" v-show="playlist?.loading" />
-      <div style="font-size: 12px">{{playlist?.getDuration?.()}}</div>
+    <div class="row items-center justify-between">
+      <div class="column">
+        <div class="text-h5 non-selectable">
+          <q-skeleton type="text" style="width: 50%" v-show="playlist?.loading" />
+          {{playlist?.name}}
+        </div>
+        <div class="non-selectable">
+          <q-skeleton type="text" style="width: 20%" v-show="playlist?.loading" />
+          {{playlist?.owner?.display_name}}
+        </div>
+        <div class="row items-center text-accent-two q-gutter-x-xs">
+          <q-icon name="language" />
+          <q-skeleton type="text" style="width: 20%" v-show="playlist?.loading" />
+          <div style="font-size: 12px">{{playlist?.getDuration?.()}}</div>
+        </div>
+      </div>
+      <div class="row items-center q-gutter-x-xs">
+        <q-btn icon="more_vert" color="accent-two" flat dense round />
+        <PlayControl :playlist="playlist" />
+      </div>
     </div>
     <div class="column no-wrap non-selectable q-my-md q-gutter-y-sm">
       <div class="row items-center cursor-pointer q-gutter-x-sm" v-for="track in playlist?.tracks" :key="track?.id" :disabled="track?.id ? undefined : true">

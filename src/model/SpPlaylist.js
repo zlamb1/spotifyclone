@@ -12,6 +12,10 @@ export default class SpPlaylist {
 
         this.tracks = data?.tracks?.items?.map((item) => new SpTrack(item.track, new SpItem(item)));
 
+        this.hasTracks = () => {
+            return this.tracks?.length > 0;
+        }
+
         this.getFirstImage = () => {
             if (this.images?.length > 0) {
                 return this.images[0].url;

@@ -40,26 +40,26 @@ const playIcon = usePlayIcon();
             <q-img :src="player?.currentlyPlaying?.getFirstImage()" width="35px" class="col-auto rounded-borders" />
             <div class="col column non-selectable on-right" style="font-size: 12px">
               <div class="row no-wrap">
-                <div style="text-wrap: nowrap" v-if="usingOtherDevice">
+                <div class="text-secondary" style="text-wrap: nowrap" v-if="usingOtherDevice">
                   {{player?.currentlyPlaying?.name}} • {{player?.currentlyPlaying?.getFirstArtist()}}
                 </div>
-                <div v-else>
+                <div class="text-secondary" v-else>
                   {{player?.currentlyPlaying?.name}}
                 </div>
               </div>
               <div class="text-primary" v-if="usingOtherDevice">
-                <q-icon name="volume_down" color="primary" class="primary-round q-mr-xs" />
+                <q-icon name="volume_down" class="primary-round q-mr-xs" />
                 {{activeDevice?.name}}
               </div>
-              <div class="text-accent-two" v-else>
+              <div class="artist text-secondary-accent" v-else>
                 {{player?.currentlyPlaying?.getFirstArtist()}}
               </div>
             </div>
           </div>
-          <div class="col-auto row no-wrap flex-center q-gutter-x-xs">
+          <div class="col-auto row no-wrap flex-center q-gutter-x-sm">
             <DeviceButton class="q-mr-xs" />
-            <q-btn icon="check" color="primary" text-color="dark" size="6px" dense round  />
-            <q-icon :name="playIcon" class="cursor-pointer" text-color="secondary" size="sm" flat dense @click="player?.togglePlayer()" />
+            <q-btn icon="check" color="primary" text-color="dark" size="8px" dense round  />
+            <q-icon :name="playIcon" class="cursor-pointer" text-color="secondary" size="md" flat dense @click="player?.togglePlayer()" />
           </div>
         </div>
       </div>
@@ -77,7 +77,7 @@ const playIcon = usePlayIcon();
   </q-layout>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .tabs {
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 1) 60%);
 }
@@ -87,5 +87,9 @@ const playIcon = usePlayIcon();
 }
 .player-container > div {
   background: v-bind(activePrimaryColor);
+}
+.artist {
+  --shadow-color: rgba(0, 0, 0, 0.4);
+
 }
 </style>
