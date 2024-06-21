@@ -3,7 +3,7 @@
 import {computed} from "vue";
 
 import {useQuasar} from "quasar";
-import {useActiveDevice, useSpotifyPlayer} from "../composables/useSpotifyAPI.js";
+import {useActiveDevice, useSpotifyPlayer} from "../composables/useSpotify.js";
 
 import ProgressBar from "./ProgressBar.vue";
 

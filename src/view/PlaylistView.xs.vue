@@ -18,7 +18,7 @@ const primaryColor = inject('primaryColor');
 
 const onPlayTrack = (track) => {
   if (player.value?.currentlyPlaying?.id === track?.id) {
-    player.value?.togglePlayer();
+    player.value?.seek(0);
   } else {
     player.value?.playPlaylist(playlist.value, {
       uri: track?.getUri(),

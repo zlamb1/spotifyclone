@@ -1,4 +1,4 @@
-import {useSpotifyPlayer} from "./useSpotifyAPI.js";
+import {useSpotifyPlayer} from "./useSpotify.js";
 import {computed} from "vue";
 
 export function usePlayIcon() {

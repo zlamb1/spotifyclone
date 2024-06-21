@@ -1,6 +1,6 @@
 <script setup>
 
-import {useSpotifyPlayer} from "../composables/useSpotifyAPI.js";
+import {useSpotifyPlayer} from "../composables/useSpotify.js";
 import {computed, inject, ref} from "vue";
 import PlaylistThumbnail from "../components/thumbnail/PlaylistThumbnail.vue";
 import HighlightBtn from "../components/btn/HighlightBtn.vue";

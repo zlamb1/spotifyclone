@@ -3,7 +3,7 @@
 import TextNavControl from "../control/TextNavControl.vue";
 import TrackPreview from "../TrackPreview.vue";
 import {ref} from "vue";
-import {useSpotifyPlayer} from "../../composables/useSpotifyAPI.js";
+import {useSpotifyPlayer} from "../../composables/useSpotify.js";
 import PlaylistContextMenu from "../menu/PlaylistContextMenu.vue";
 import ArtistContextMenu from "../menu/ArtistContextMenu.vue";
 

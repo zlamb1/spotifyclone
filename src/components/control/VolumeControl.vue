@@ -1,6 +1,6 @@
 <script setup>
 
-import {useSpotifyPlayer} from "../../composables/useSpotifyAPI.js";
+import {useSpotifyPlayer} from "../../composables/useSpotify.js";
 import ProgressBar from "../ProgressBar.vue";
 import {computed, ref} from "vue";
 import ChangeStrategy from "../../model/ChangeStrategy.js";

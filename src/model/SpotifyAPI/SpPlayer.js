@@ -1,8 +1,8 @@
 // wrapper class for Spotify.Player from Spotify Web Playback SDK
 
 import SpRepeatMode from "./SpRepeatMode.js";
-import { SpotifyWebAPI } from "../composables/useSpotifyAPI.js";
-import {activeDevice, queryPlayerState} from "../services/spotify_service.js";
+import { SpotifyWebAPI } from "../../composables/useSpotifyAPI.js";
+import { activeDevice, queryPlayerState } from "../../services/spotify_service.js";
 
 export default class SpPlayer {
     constructor() {

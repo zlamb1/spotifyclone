@@ -3,7 +3,7 @@
 import {RouterView} from "vue-router";
 import {useIsMobile, useDynamicComponent} from "./composables/useDynamicComponent.js";
 import {provide, ref, watch} from "vue";
-import {usePlaylist, useUserPlaylists} from "./composables/useSpotifyAPI.js";
+import {usePlaylist, useOwnerPlaylists} from "./composables/useSpotify.js";
 import {activePlaylistId} from "./services/spotify_service.js";
 import usePrimaryColor from "./composables/usePrimaryColor.js";
 import tinycolor from "tinycolor2";
@@ -29,7 +29,7 @@ watch(activePlaylist, () => {
   }
 });
 
-const userPlaylists = useUserPlaylists();
+const userPlaylists = useOwnerPlaylists();
 provide('userPlaylists', userPlaylists);
 
 const isMobile = useIsMobile();
@@ -44,7 +44,11 @@ const DefaultLayout = useDynamicComponent({
 
 <template>
   <DefaultLayout>
-    <RouterView />
+    <RouterView v-slot="{ Component }">
+      <transition name="fast-fade">
+        <component :is="Component" />
+      </transition>
+    </RouterView>
   </DefaultLayout>
 </template>
 
@@ -66,6 +70,14 @@ body.body--dark .shadow-4 {
 }
 body.body--dark .shadow-5 {
   box-shadow: 0 3px 5px -1px var(--shadow-color), 0 5px 8px var(--shadow-color), 0 1px 14px var(--shadow-color) !important;
+}
+
+.fast-fade-enter-active, .fast-fade-leave-active {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.fast-fade-enter-from, .fast-fade-leave-to {
+  opacity: 0;
 }
 
 .fade-enter-active, .fade-leave-active {

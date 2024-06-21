@@ -87,6 +87,7 @@ const playIcon = usePlayIcon();
 }
 .player-container > div {
   background: v-bind(activePrimaryColor);
+  transition: background-color 0.3s ease-in-out;
 }
 .artist {
   --shadow-color: rgba(0, 0, 0, 0.4);

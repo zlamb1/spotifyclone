@@ -1,9 +1,11 @@
 <script setup>
 
-import {computed, ref} from "vue";
-import {SpotifyWebAPI, usePlaylists, useSpotifyPlayer} from "../composables/useSpotifyAPI.js";
-import {activePlaylistId} from "../services/spotify_service.js";
+import { computed, ref } from "vue";
+import { activePlaylistId } from "../services/spotify_service.js";
+import { SpotifyWebAPI } from "../composables/useSpotifyAPI.js";
+import { usePlaylists, useSpotifyPlayer } from "../composables/useSpotify.js";
 import TrackThumbnail from "../components/thumbnail/TrackThumbnail.vue";
+import {fetchSpotifyAPI} from "../services/spotify_api.js";
 
 const player = useSpotifyPlayer();
 
@@ -15,7 +17,9 @@ const recentPlaylists = ref([]);
 const { playlists } = usePlaylists(recentPlaylists);
 
 (async() => {
-  recentlyPlayed.value = await SpotifyWebAPI.Player.GetRecentlyPlayedTracks(50);
+  const res = await SpotifyWebAPI.Player.GetRecentlyPlayedTracks(50);
+  recentlyPlayed.value = res?.data;
+
   const set = [];
   const deduped = [];
   for (const item of recentlyPlayed.value) {

@@ -6,7 +6,8 @@ import {ref} from "vue";
 const categories = ref([]);
 
 const fetchCategories = async () => {
-  categories.value = await SpotifyWebAPI.Categories.GetBrowseCategories(20, 0);
+  const res = await SpotifyWebAPI.Categories.GetBrowseCategories(20, 0);
+  categories.value = res.data;
 }
 
 fetchCategories();

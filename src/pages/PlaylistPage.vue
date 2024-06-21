@@ -3,7 +3,7 @@
 import {useDynamicComponent} from "../composables/useDynamicComponent.js";
 import {useRoute} from "vue-router";
 import {provide, ref, watch} from "vue";
-import {usePlaylist} from "../composables/useSpotifyAPI.js";
+import {usePlaylist} from "../composables/useSpotify.js";
 import usePrimaryColor from "../composables/usePrimaryColor.js";
 
 const PlaylistView = useDynamicComponent({
