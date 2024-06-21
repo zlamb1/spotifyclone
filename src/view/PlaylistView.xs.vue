@@ -1,9 +1,9 @@
 <script setup>
 
-import {useSpotifyPlayer} from "../composables/useSpotifyAPI.js";
-import {inject} from "vue";
+import { useSpotifyPlayer } from "../composables/useSpotify.js";
+import { inject } from "vue";
 import TrackThumbnail from "../components/thumbnail/TrackThumbnail.vue";
-import {useRouter} from "vue-router";
+import { useRouter } from "vue-router";
 import PlaylistThumbnail from "../components/thumbnail/PlaylistThumbnail.vue";
 import PlayControl from "../components/control/PlaylistControl.vue";
 
@@ -15,6 +15,16 @@ const playlist = inject('playlist');
 
 const defaultColor = inject('defaultColor');
 const primaryColor = inject('primaryColor');
+
+const onPlayTrack = (track) => {
+  if (player.value?.currentlyPlaying?.id === track?.id) {
+    player.value?.togglePlayer();
+  } else {
+    player.value?.playPlaylist(playlist.value, {
+      uri: track?.getUri(),
+    });
+  }
+}
 
 const isTrackPlaying = (track) => {
   return player.value?.currentlyPlaying?.id === track?.id;
@@ -55,7 +65,8 @@ const isTrackPlaying = (track) => {
       </div>
     </div>
     <div class="column no-wrap non-selectable q-my-md q-gutter-y-sm">
-      <div class="row items-center cursor-pointer q-gutter-x-sm" v-for="track in playlist?.tracks" :key="track?.id" :disabled="track?.id ? undefined : true">
+      <div class="row items-center cursor-pointer q-gutter-x-sm" v-for="track in playlist?.tracks"
+           :key="track?.id" :disabled="track?.id ? undefined : true" @click="onPlayTrack(track)">
         <TrackThumbnail class="rounded-borders" width="35px" ratio="1" :track="track" />
         <div class="overflow-container col column justify-center">
           <div class="prevent-overflow" :class="isTrackPlaying(track) ? 'text-primary' : 'text-secondary'">
