@@ -65,13 +65,13 @@ onUnmounted(() => {
             <slot name="user-link" />
           </RouterLink>
         </div>
-        <div class="row no-wrap">
-          <div v-for="(artist, index) in track?.artists" :key="index">
-            <RouterLink class="text-accent-two non-selectable link" :to="{name: 'artist', params: { id: artist.id }}">
+        <div class="row q-gutter-x-xs no-wrap">
+          <div class="row text-accent-two" v-for="(artist, index) in track?.artists" :key="index">
+            <RouterLink class="link non-selectable text-accent-two" :to="{name: 'artist', params: { id: artist.id }}">
               {{artist.name}}
               <slot name="artist-link" />
             </RouterLink>
-            <span class="text-accent-two non-selectable q-mr-xs" v-show="index !== track?.artists?.length - 1">,</span>
+            {{index !== track?.artists?.length - 1 ? ',' : ''}}
           </div>
         </div>
       </div>

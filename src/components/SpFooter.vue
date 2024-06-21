@@ -40,7 +40,7 @@ const formatDuration = (duration) => {
 
 <template>
   <q-footer>
-    <div class="row justify-center q-py-sm q-px-md">
+    <div class="row flex-center q-py-sm q-px-md">
       <div class="col-4" v-show="screen.gt.xs">
         <TrackPreview :track="player.playingItem" v-if="player?.playingItem">
           <template #artist-link>

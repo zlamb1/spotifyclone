@@ -11,6 +11,7 @@ export default class SpPlaylist {
         this.href = data.external_urls.spotify;
 
         this.tracks = data?.tracks?.items?.map((item) => new SpTrack(item.track, new SpItem(item)));
+        this.count = data?.tracks?.total;
 
         this.hasTracks = () => {
             return this.tracks?.length > 0;

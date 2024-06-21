@@ -41,5 +41,5 @@ const playIcon = computed(() => {
 </script>
 
 <template>
-  <q-btn :icon="playIcon" :color="color" :text-color="textColor" size="18px" dense round @click="onPlay" />
+  <q-btn :icon="playIcon" :color="color" :text-color="textColor" size="18px" dense round push @click="onPlay" />
 </template>

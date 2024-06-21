@@ -1,14 +1,21 @@
-export default function usePrimaryColor() {
+import {ref, watch} from "vue";
+import tinycolor from "tinycolor2";
+
+export function usePrimaryColor() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
     return (url, cb) => {
+        const defaultRGB = { r: 18, g: 18, b: 18 }
+
         const img = new Image;
         img.setAttribute('crossOrigin', '');
         img.src = url;
+        img.onerror = () => {
+            cb(`rgb(${defaultRGB.r}, ${defaultRGB.g}, ${defaultRGB.b})`);
+        }
         img.onload = () => {
             let blockSize = 5, // only visit every 5 pixels
-                defaultRGB = { r: 0, g: 0, b: 0}, // for non-supporting envs
                 data, width, height,
                 i = -4,
                 length,
@@ -28,7 +35,6 @@ export default function usePrimaryColor() {
                 data = ctx.getImageData(0, 0, width, height);
             } catch(e) {
                 /* security error, img on diff domain */
-                console.error(e);
                 return defaultRGB;
             }
 
@@ -49,4 +55,42 @@ export default function usePrimaryColor() {
             cb(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
         }
     }
+}
+
+export function useInterpColor(color) {
+    const interpColor = ref(color.value);
+
+    const doingInterp = ref(false);
+    const interpInitialColor = ref();
+    const interpNewColor = ref();
+    const interpAccumulator = ref(0);
+
+    watch(color, (newColor, initialColor) => {
+        if (doingInterp.value) {
+            interpAccumulator.value = 0;
+            interpInitialColor.value = interpColor.value;
+            interpNewColor.value = newColor;
+        } else {
+            interpAccumulator.value = 0;
+            interpInitialColor.value = initialColor;
+            interpNewColor.value = newColor;
+            animateColor();
+        }
+    });
+
+    function animateColor(time = 0.1, refreshRate = 5) {
+        doingInterp.value = true;
+        const clear = setInterval(() => {
+            const progress = (interpAccumulator.value / 1000) / time;
+            if (progress >= 1) {
+                clearInterval(clear);
+                doingInterp.value = false;
+            } else {
+                interpAccumulator.value += refreshRate;
+                interpColor.value = tinycolor.mix(interpInitialColor.value, interpNewColor.value, Math.floor(progress * 100));
+            }
+        }, refreshRate);
+    }
+
+    return interpColor;
 }

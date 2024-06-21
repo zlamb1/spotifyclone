@@ -15,8 +15,13 @@ const props = defineProps({
   activeIcon: {
     type: String,
   },
-  activeClasses: {
+  iconColor: {
     type: String,
+    default: 'accent-two',
+  },
+  activeIconColor: {
+    type: String,
+    default: 'secondary',
   },
 });
 
@@ -26,7 +31,7 @@ const active = computed(() => props.to === route.path);
 </script>
 
 <template>
-  <IconBtn :to="to" :icon="active ? (activeIcon ?? icon) : icon" :class="active ? activeClasses : undefined" icon-size="md" round>
+  <IconBtn :to="to" :icon="active ? (activeIcon ?? icon) : icon" :icon-color="active ? activeIconColor : iconColor" icon-size="md" round>
     <slot />
   </IconBtn>
 </template>

@@ -39,13 +39,11 @@ const getPlayIcon = (id) => {
   return isActive(id) ? 'pause' : 'play_arrow';
 }
 
-const onClick = (track, playlist) => {
-  if (isPlaying(track?.id)) {
+const onPlay = () => {
+  if (isPlaying(props.row?.track?.id)) {
     player.value?.togglePlayer();
   } else {
-    player.value?.playPlaylist(playlist, {
-      uri: track?.getUri(),
-    });
+    player.value?.playPlaylist(props.row?.playlist, props.row?.track);
   }
 }
 
@@ -53,11 +51,11 @@ const onClick = (track, playlist) => {
 
 <template>
   <q-tr class="text-accent-two" :style="selected ? 'background: color-mix(in srgb, var(--q-secondary), transparent 93%)' : ''" style="font-size: 24px"
-        @mouseenter="isHovering = true" @mouseleave="isHovering = false">
+        @dblclick="onPlay" @mouseenter="isHovering = true" @mouseleave="isHovering = false">
     <PlaylistContextMenu />
     <q-td class="non-selectable" style="border: 0; font-size: 20px; padding-left: 8px !important;" auto-width>
       <div class="flex flex-center" :class="isPlaying(row?.track?.id) ? 'text-primary' : ''" style="width: 20px">
-        <q-icon :name="getPlayIcon(row?.track?.id)" class="cursor-pointer" color="secondary" v-if="isHovering" @click="onClick(row?.track, row?.playlist)" />
+        <q-icon :name="getPlayIcon(row?.track?.id)" class="cursor-pointer" color="secondary" v-if="isHovering" @click="onPlay" />
         <div v-else>
           <q-spinner-audio v-if="isActive(row?.track?.id)" />
           <span v-else>{{row?.index}}</span>

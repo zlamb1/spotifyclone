@@ -57,8 +57,7 @@ const onClear = async () => {
           <IconBtn icon="chevron_left" icon-size="lg" icon-color="accent-two" round flat @click="onRouteBack" />
           <IconBtn icon="chevron_right" icon-size="lg" icon-color="accent-two" round flat @click="onRouteNext" />
         </div>
-        <NavControl to="/" icon="o_home" active-icon="home" active-classes="text-secondary"
-                    color="accent" text-color="accent-two" class="q-ml-sm">
+        <NavControl to="/" icon="o_home" active-icon="home" color="accent" class="q-ml-sm">
           <q-tooltip class="bg-accent" style="font-size: 14px">Home</q-tooltip>
         </NavControl>
       </div>
@@ -72,8 +71,7 @@ const onClear = async () => {
           <template #append>
             <q-separator vertical class="q-my-md" color="accent-two" />
             <q-btn icon="clear" size="md" text-color="accent-two" round flat @click="onClear" v-if="search" />
-            <NavControl to="/browse" icon="sym_o_browse" active-classes="text-secondary"
-                        text-color="accent-two" icon-size="md" v-else>
+            <NavControl to="/browse" icon="sym_o_browse" icon-size="md" v-else>
               <q-tooltip class="bg-accent" style="font-size: 14px">Browse</q-tooltip>
             </NavControl>
           </template>

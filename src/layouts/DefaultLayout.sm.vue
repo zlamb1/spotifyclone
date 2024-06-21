@@ -30,15 +30,15 @@ provide('calcPageHeight', calcPageHeight);
     <q-page-container>
       <q-page :style-fn="styleFn">
         <div class="row fit q-px-md" style="min-height: inherit;">
-          <div class="column no-wrap bg-dark-accent rounded-borders q-mr-sm" :style="`max-height: ${calcPageHeight}`" style="overflow-y: scroll">
-            <q-btn icon="menu_book" text-color="accent-two" class="q-pa-md" round>
+          <div class="column no-wrap items-center bg-dark-accent rounded-borders q-mr-sm q-gutter-y-xs" :style="`max-height: ${calcPageHeight}`">
+            <q-btn icon="menu_book" text-color="accent-two" class="col-auto q-pa-md" round>
               <q-tooltip class="bg-accent" anchor="center right" self="center left">
                 <div class="tooltip-text">Expand Your Library</div>
               </q-tooltip>
             </q-btn>
-            <q-list class="q-mt-md">
+            <q-list style="overflow-y: scroll">
               <q-item v-for="playlist in userPlaylists" :key="playlist.id" :to="`/playlist/${playlist.id}`" class="q-px-sm" active-class="" clickable>
-                <PlaylistThumbnail color="accent" text-color="secondary" :playlist="playlist" />
+                <PlaylistThumbnail icon="music_note" :playlist="playlist" />
                 <q-tooltip class="row items-center bg-accent tooltip-text" anchor="center right" self="center left">
                   <div class="column">
                     <div class="tooltip-text" :class="activePlaylistId === playlist.id ? 'text-primary' : ''">{{playlist.name}}</div>

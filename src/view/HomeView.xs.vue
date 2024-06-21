@@ -82,11 +82,11 @@ const isHoveringCarousel = ref(false);
         </RouterLink>
       </div>
     </div>
-    <div class="q-mt-md" v-show="recentlyPlayed?.length">
+    <div class="q-mt-md" v-show="loadingRecentlyPlayed || recentlyPlayed?.length">
       <div class="text-h5 text-secondary">Recently played</div>
       <div class="row q-col-gutter-sm q-my-sm" v-show="loadingRecentlyPlayed">
         <div class="col-4" v-for="i in 3">
-          <q-responsive class="col-4" ratio="1">
+          <q-responsive ratio="1">
             <q-skeleton type="rect" />
           </q-responsive>
         </div>

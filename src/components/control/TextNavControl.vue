@@ -3,6 +3,10 @@
 import {ref} from "vue";
 
 const props = defineProps({
+  to: {
+    type: Object,
+    required: true,
+  },
   class: {
     type: String,
   },
@@ -22,7 +26,7 @@ const isHovering = ref(false);
 </script>
 
 <template>
-  <RouterLink :class="isHovering ? activeClass : props.class" :style="isHovering ? activeStyle : style"
+  <RouterLink :to="to" :class="isHovering ? activeClass : props.class" :style="isHovering ? activeStyle : style"
               @mouseenter="isHovering = true" @mouseleave="isHovering = false">
     <slot />
   </RouterLink>
