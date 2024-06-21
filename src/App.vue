@@ -44,11 +44,7 @@ const DefaultLayout = useDynamicComponent({
 
 <template>
   <DefaultLayout>
-    <RouterView v-slot="{ Component }">
-      <transition name="fast-fade">
-        <component :is="Component" />
-      </transition>
-    </RouterView>
+    <RouterView />
   </DefaultLayout>
 </template>
 
@@ -73,7 +69,7 @@ body.body--dark .shadow-5 {
 }
 
 .fast-fade-enter-active, .fast-fade-leave-active {
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .fast-fade-enter-from, .fast-fade-leave-to {
