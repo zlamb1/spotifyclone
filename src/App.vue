@@ -37,7 +37,7 @@ provide('isMobile', isMobile);
 
 const DefaultLayout = useDynamicComponent({
   xs: 'layouts/xs/DefaultLayout',
-  sm: 'layouts/DefaultLayout'
+  sm: 'DefaultLayout'
 });
 
 </script>
