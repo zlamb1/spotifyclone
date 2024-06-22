@@ -78,7 +78,7 @@ export function useInterpColor(color) {
         }
     });
 
-    function animateColor(time = 0.1, refreshRate = 5) {
+    function animateColor(time = 0.3, refreshRate = 5) {
         doingInterp.value = true;
         const clear = setInterval(() => {
             const progress = (interpAccumulator.value / 1000) / time;

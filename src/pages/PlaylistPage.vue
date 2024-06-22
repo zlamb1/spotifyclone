@@ -7,8 +7,8 @@ import { usePlaylist } from "../composables/useSpotify.js";
 import { usePrimaryColor } from "../composables/usePrimaryColor.js";
 
 const PlaylistView = useDynamicComponent({
-  xs: 'view/PlaylistView.xs',
-  sm: 'view/PlaylistView.sm',
+  xs: 'view/xs/PlaylistView',
+  sm: 'view/PlaylistView',
 });
 
 const route = useRoute();

@@ -36,8 +36,8 @@ const isMobile = useIsMobile();
 provide('isMobile', isMobile);
 
 const DefaultLayout = useDynamicComponent({
-  xs: 'layouts/DefaultLayout.xs',
-  sm: 'layouts/DefaultLayout.sm'
+  xs: 'layouts/xs/DefaultLayout',
+  sm: 'layouts/DefaultLayout'
 });
 
 </script>
@@ -66,14 +66,6 @@ body.body--dark .shadow-4 {
 }
 body.body--dark .shadow-5 {
   box-shadow: 0 3px 5px -1px var(--shadow-color), 0 5px 8px var(--shadow-color), 0 1px 14px var(--shadow-color) !important;
-}
-
-.fast-fade-enter-active, .fast-fade-leave-active {
-  transition: opacity 0.3s ease-in-out;
-}
-
-.fast-fade-enter-from, .fast-fade-leave-to {
-  opacity: 0;
 }
 
 .fade-enter-active, .fade-leave-active {

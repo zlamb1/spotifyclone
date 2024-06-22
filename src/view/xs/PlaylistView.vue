@@ -1,11 +1,11 @@
 <script setup>
 
-import { useSpotifyPlayer } from "../composables/useSpotify.js";
+import { useSpotifyPlayer } from "../../composables/useSpotify.js";
 import { inject } from "vue";
-import TrackThumbnail from "../components/thumbnail/TrackThumbnail.vue";
+import TrackThumbnail from "../../components/thumbnail/TrackThumbnail.vue";
 import { useRouter } from "vue-router";
-import PlaylistThumbnail from "../components/thumbnail/PlaylistThumbnail.vue";
-import PlayControl from "../components/control/PlaylistControl.vue";
+import PlaylistThumbnail from "../../components/thumbnail/PlaylistThumbnail.vue";
+import PlayControl from "../../components/control/PlaylistControl.vue";
 
 const router = useRouter();
 const player = useSpotifyPlayer();

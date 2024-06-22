@@ -22,7 +22,7 @@ const playlist = inject('playlist');
 const defaultColor = inject('defaultColor');
 const primaryColor = inject('primaryColor');
 
-const container = ref(null);
+const bgContainer = ref(null);
 const btnContainer = ref(null);
 
 const tableColumns = [
@@ -47,8 +47,8 @@ const computedRows = computed(() => {
 });
 
 const scrollY = ref(0);
-useEventListenerRef(container, 'scroll', () => {
-  scrollY.value = container.value?.scrollTop;
+useEventListenerRef(bgContainer, 'scroll', () => {
+  scrollY.value = bgContainer.value?.scrollTop;
 });
 
 const computedShowHeader = computed(() => {
@@ -63,7 +63,7 @@ const computedPlayIcon = computed(() => {
 });
 
 const computedHasTracks = computed(() => {
-  return playlist.value?.tracks?.length > 0;
+  return playlist.value?.count > 0;
 });
 
 const onClick = () => {
@@ -103,7 +103,7 @@ const interpPrimaryColor = useInterpColor(primaryColor);
 </script>
 
 <template>
-  <div class="col rounded-borders relative-position" style="overflow-y: scroll" :style="`min-height: ${calcPageHeight};`" ref="container">
+  <div class="col rounded-borders relative-position">
     <transition name="fade">
       <div style="position: sticky; top: 0; height: 0; z-index: 99" v-show="computedShowHeader">
         <div class="row items-center q-gutter-x-sm q-px-lg q-py-sm" :style="`background: ${computedBackground}`">
@@ -122,7 +122,7 @@ const interpPrimaryColor = useInterpColor(primaryColor);
         </div>
       </div>
     </transition>
-    <div class="bg-container q-py-lg">
+    <div class="bg-container q-py-lg" ref="bgContainer">
       <div class="row q-px-lg" v-if="playlist">
         <div class="thumbnail-container col-3">
           <q-responsive ratio="1">

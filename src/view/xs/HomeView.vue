@@ -1,11 +1,10 @@
 <script setup>
 
 import { computed, ref } from "vue";
-import { activePlaylistId } from "../services/spotify_service.js";
-import { SpotifyWebAPI } from "../composables/useSpotifyAPI.js";
-import { usePlaylists, useSpotifyPlayer } from "../composables/useSpotify.js";
-import TrackThumbnail from "../components/thumbnail/TrackThumbnail.vue";
-import {fetchSpotifyAPI} from "../services/spotify_api.js";
+import { activePlaylistId } from "../../services/spotify_service.js";
+import { SpotifyWebAPI } from "../../composables/useSpotifyAPI.js";
+import { usePlaylists, useSpotifyPlayer } from "../../composables/useSpotify.js";
+import TrackThumbnail from "../../components/thumbnail/TrackThumbnail.vue";
 
 const player = useSpotifyPlayer();
 
