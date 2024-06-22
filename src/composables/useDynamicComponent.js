@@ -1,7 +1,9 @@
-import {computed, defineAsyncComponent, ref, shallowRef, watch} from "vue";
-import {useQuasar} from "quasar";
+import { computed, defineAsyncComponent, ref, shallowRef, watch } from "vue";
+import { useQuasar } from "quasar";
 
 const BREAKPOINTS = [ 'xs', 'sm', 'md', 'lg', 'xl' ];
+
+const modules = import.meta.glob(['../components/**/*.vue', '../layouts/**/*.vue', '../view/**/*.vue']);
 
 export function useIsMobile() {
     const $q = useQuasar();
@@ -23,11 +25,9 @@ export function useDynamicComponent(routes) {
             for (let i = index; i >= 0; i--) {
                 const current = BREAKPOINTS[i];
                 if (routes[current]) {
-                    const route = routes[current];
-                    const importName = './src/' + route + '.vue';
-                    if (importName !== currentRoute.value) {
-                        currentRoute.value = importName;
-                        dynamicComponent.value = defineAsyncComponent(() => import(importName));
+                    if (routes[current] !== currentRoute.value) {
+                        currentRoute.value = routes[current];
+                        dynamicComponent.value = defineAsyncComponent(modules['../' + currentRoute.value + '.vue']);
                         return;
                     }
                 }
