@@ -25,11 +25,10 @@ export function useDynamicComponent(routes) {
             for (let i = index; i >= 0; i--) {
                 const current = BREAKPOINTS[i];
                 if (routes[current]) {
-                    if (routes[current] !== currentRoute.value) {
-                        currentRoute.value = routes[current];
-                        dynamicComponent.value = defineAsyncComponent(modules['../' + currentRoute.value + '.vue']);
-                        return;
-                    }
+                    if (routes[current] === currentRoute.value) return;
+                    currentRoute.value = routes[current];
+                    dynamicComponent.value = defineAsyncComponent(modules['../' + currentRoute.value + '.vue']);
+                    return;
                 }
             }
 
