@@ -24,7 +24,7 @@ export function useDynamicComponent(routes) {
                 const current = BREAKPOINTS[i];
                 if (routes[current]) {
                     const route = routes[current];
-                    const importName = '../' + route + '.vue';
+                    const importName = './src/' + route + '.vue';
                     if (importName !== currentRoute.value) {
                         currentRoute.value = importName;
                         dynamicComponent.value = defineAsyncComponent(() => import(importName));
