@@ -1,6 +1,6 @@
 <script setup>
 
-import {ref, watch} from "vue";
+import { ref, watch } from "vue";
 
 const props = defineProps({
   track: {

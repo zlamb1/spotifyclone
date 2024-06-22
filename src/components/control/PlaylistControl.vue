@@ -1,8 +1,8 @@
 <script setup>
 
-import {computed} from "vue";
-import {activePlaylistId} from "../../services/spotify_service.js";
-import {useSpotifyPlayer} from "../../composables/useSpotify.js";
+import { useSpotifyPlayer } from "~/composables/useSpotify.js";
+import { activePlaylistId } from "~/js/spotify_service.js";
+import { computed } from "vue";
 
 const player = useSpotifyPlayer();
 

@@ -1,6 +1,6 @@
 <script setup>
 
-import {computed, inject, ref} from "vue";
+import { computed, inject, ref } from "vue";
 
 const props = defineProps({
   findPlaylistLabel: {

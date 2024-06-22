@@ -1,11 +1,11 @@
 <script setup>
 
-import TextNavControl from "../control/TextNavControl.vue";
-import TrackPreview from "../TrackPreview.vue";
-import {ref} from "vue";
-import {useSpotifyPlayer} from "../../composables/useSpotify.js";
-import PlaylistContextMenu from "../menu/PlaylistContextMenu.vue";
-import ArtistContextMenu from "../menu/ArtistContextMenu.vue";
+import TextNavControl from "~/components/control/TextNavControl.vue";
+import TrackPreview from "~/components/TrackPreview.vue";
+import PlaylistContextMenu from "~/components/menu/PlaylistContextMenu.vue";
+import ArtistContextMenu from "~/components/menu/ArtistContextMenu.vue";
+import { useSpotifyPlayer } from "~/composables/useSpotify.js";
+import { ref } from "vue";
 
 const props = defineProps({
   row: {

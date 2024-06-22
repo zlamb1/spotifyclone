@@ -1,10 +1,10 @@
 <script setup>
-import {computed, ref} from "vue";
-import {useRouter} from "vue-router";
 
 import IconBtn from "./btn/IconBtn.vue";
-import {useQuasar} from "quasar";
 import NavControl from "./control/NavControl.vue";
+import { useQuasar } from "quasar";
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const $q = useQuasar();
 const screen = $q.screen;

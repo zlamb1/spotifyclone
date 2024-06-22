@@ -1,6 +1,6 @@
 <script setup>
 
-import HighlightBtn from "../btn/HighlightBtn.vue";
+import HighlightBtn from "~/components/btn/HighlightBtn.vue";
 
 defineProps({
   columns: {

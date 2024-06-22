@@ -1,7 +1,7 @@
 <script setup>
 
-import {SpotifyWebAPI} from "../composables/useSpotifyAPI.js";
-import {ref} from "vue";
+import { SpotifyWebAPI } from "~/composables/useSpotifyAPI.js";
+import { ref } from "vue";
 
 const categories = ref([]);
 

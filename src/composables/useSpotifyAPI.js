@@ -1,9 +1,9 @@
-import {fetchSpotifyAPI} from "../services/spotify_api.js";
-import SpCategory from "../model/SpotifyAPI/SpCategory.js";
-import SpHistoryItem from "../model/SpotifyAPI/SpHistoryItem.js";
-import SpPlaylist from "../model/SpotifyAPI/SpPlaylist.js";
-import SpStatus from "../model/SpotifyAPI/SpStatus.js";
-import SpResult from "../model/SpResult.js";
+import {fetchSpotifyAPI} from "~/js/spotify_api.js";
+import SpCategory from "~/model/SpotifyAPI/SpCategory.js";
+import SpHistoryItem from "~/model/SpotifyAPI/SpHistoryItem.js";
+import SpPlaylist from "~/model/SpotifyAPI/SpPlaylist.js";
+import SpStatus from "~/model/SpotifyAPI/SpStatus.js";
+import SpResult from "~/model/SpResult.js";
 
 export const SpotifyWebAPI = Object.freeze({
     Categories: {

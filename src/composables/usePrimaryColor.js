@@ -1,4 +1,4 @@
-import {ref, watch} from "vue";
+import { ref, watch } from "vue";
 import tinycolor from "tinycolor2";
 
 export function usePrimaryColor() {

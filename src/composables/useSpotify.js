@@ -1,6 +1,6 @@
-import { player, spDevices, activeDevice, activePlaylistId } from '../services/spotify_service.js'
-import {onMounted, onUnmounted, ref, watch} from "vue";
-import {SpotifyWebAPI} from "./useSpotifyAPI.js";
+import { SpotifyWebAPI } from "./useSpotifyAPI.js";
+import { player, spDevices, activeDevice, activePlaylistId } from '~/js/spotify_service.js'
+import { onMounted, onUnmounted, ref, watch } from "vue";
 
 export function useSpotifyPlayer() {
     return player;

@@ -1,7 +1,7 @@
 <script setup>
 
-import { activePlaylistId } from "../services/spotify_service.js";
-import {inject, ref} from "vue";
+import { activePlaylistId } from "~/js/spotify_service.js";
+import { inject, ref } from "vue";
 
 import PlaylistThumbnail from "../components/thumbnail/PlaylistThumbnail.vue";
 import {morph} from "quasar";

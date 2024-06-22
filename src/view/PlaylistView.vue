@@ -1,19 +1,16 @@
 <script setup>
 
-import { useSpotifyPlayer } from "../composables/useSpotify.js";
-import {computed, inject, ref, watch} from "vue";
-import { activePlaylistId}  from "../services/spotify_service.js";
-import { useEventListenerRef}  from "../composables/useEventListener.js";
-
-import tinycolor from "tinycolor2";
-
-import PlaylistThumbnail from "../components/thumbnail/PlaylistThumbnail.vue";
-import HighlightBtn from "../components/btn/HighlightBtn.vue";
-import TrackTableRow from "../components/table/TrackTableRow.vue";
-import TableHeader from "../components/table/TableHeader.vue";
-import PlaylistFind from "../components/PlaylistFind.vue";
-import PlaylistControl from "../components/control/PlaylistControl.vue";
-import {useInterpColor} from "../composables/usePrimaryColor.js";
+import PlaylistThumbnail from "~/components/thumbnail/PlaylistThumbnail.vue";
+import HighlightBtn from "~/components/btn/HighlightBtn.vue";
+import TrackTableRow from "~/components/table/TrackTableRow.vue";
+import TableHeader from "~/components/table/TableHeader.vue";
+import PlaylistFind from "~/components/PlaylistFind.vue";
+import PlaylistControl from "~/components/control/PlaylistControl.vue";
+import {useInterpColor} from "~/composables/usePrimaryColor.js";
+import { useEventListenerRef}  from "~/composables/useEventListener.js";
+import { useSpotifyPlayer } from "~/composables/useSpotify.js";
+import { activePlaylistId}  from "~/js/spotify_service.js";
+import { computed, inject, ref } from "vue";
 
 const player = useSpotifyPlayer();
 

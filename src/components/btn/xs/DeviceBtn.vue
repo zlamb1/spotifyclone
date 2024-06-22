@@ -1,8 +1,8 @@
 <script setup>
 
-import {ref} from "vue";
-import {activeDevice} from "../../../services/spotify_service.js";
-import VolumeControl from "../../control/VolumeControl.vue";
+import VolumeControl from "~/components/control/VolumeControl.vue";
+import { activeDevice } from "~/js/spotify_service.js";
+import { ref } from "vue";
 
 const dialog = ref(false);
 

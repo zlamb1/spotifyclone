@@ -1,6 +1,6 @@
 <script setup>
 
-import {useSpotifyPlayer} from "../../composables/useSpotify.js";
+import { useSpotifyPlayer } from "~/composables/useSpotify.js";
 
 import IconBtn from "../btn/IconBtn.vue";
 

@@ -1,5 +1,5 @@
 import { SessionStorage } from 'quasar'
-import SpStatus from "../model/SpotifyAPI/SpStatus.js";
+import SpStatus from "~/model/SpotifyAPI/SpStatus.js";
 
 const clientId = '656b8e65db8a43248fa3c90a050bfad1';
 const params = new URLSearchParams(window.location.search);

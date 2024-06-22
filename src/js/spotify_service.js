@@ -1,11 +1,9 @@
-import {accessToken, fetchSpotifyAPI} from "./spotify_api.js";
-import {ref} from "vue";
-
-import SpPlayer from "../model/SpotifyAPI/SpPlayer.js";
-import SpDevice from "../model/SpotifyAPI/SpDevice.js";
-import SpRepeatMode from "../model/SpotifyAPI/SpRepeatMode.js";
-import SpType from "../model/SpotifyAPI/SpType.js";
-import SpTrack from "../model/SpotifyAPI/SpTrack.js";
+import { accessToken, fetchSpotifyAPI } from "./spotify_api.js";
+import SpPlayer from "~/model/SpotifyAPI/SpPlayer.js";
+import SpDevice from "~/model/SpotifyAPI/SpDevice.js";
+import SpRepeatMode from "~/model/SpotifyAPI/SpRepeatMode.js";
+import SpTrack from "~/model/SpotifyAPI/SpTrack.js";
+import { ref } from "vue";
 
 const player = ref(new SpPlayer());
 const spDevices = ref([]);

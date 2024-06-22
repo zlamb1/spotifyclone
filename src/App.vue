@@ -2,10 +2,10 @@
 
 import { RouterView } from "vue-router";
 import { provide, ref, watch } from "vue";
-import { activePlaylistId } from "./services/spotify_service.js";
-import { useIsMobile, useDynamicComponent } from "./composables/useDynamicComponent.js";
-import { usePlaylist, useOwnerPlaylists } from "./composables/useSpotify.js";
-import { usePrimaryColor } from "./composables/usePrimaryColor.js";
+import { activePlaylistId } from "~/js/spotify_service.js";
+import { useIsMobile, useDynamicComponent } from "~/composables/useDynamicComponent.js";
+import { usePlaylist, useOwnerPlaylists } from "~/composables/useSpotify.js";
+import { usePrimaryColor } from "~/composables/usePrimaryColor.js";
 import tinycolor from "tinycolor2";
 
 const activePlaylist = usePlaylist(activePlaylistId).playlist;

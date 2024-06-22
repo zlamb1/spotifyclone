@@ -1,10 +1,9 @@
 <script setup>
 
-import SpHeader from "../components/SpHeader.vue";
-import SpFooter from "../components/SpFooter.vue";
+import PlaylistList from "~/components/PlaylistList.vue";
+import SpHeader from "~/components/SpHeader.vue";
+import SpFooter from "~/components/SpFooter.vue";
 import { computed, provide, ref } from "vue";
-
-import PlaylistList from "../components/PlaylistList.vue";
 
 const offset = ref(0);
 

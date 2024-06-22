@@ -1,7 +1,7 @@
 <script setup>
 
-import ChangeStrategy from "../model/ChangeStrategy.js";
-import {computed, onMounted, onUnmounted, ref, watch} from "vue";
+import ChangeStrategy from "~/model/ChangeStrategy.js";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 const props = defineProps({
   changeStrategy: {

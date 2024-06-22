@@ -1,11 +1,9 @@
 <script setup>
 
-import {ref, watch} from "vue";
-
-import SpDeviceType from "../../model/SpotifyAPI/SpDeviceType.js";
-
-import { SpotifyWebAPI } from "../../composables/useSpotifyAPI.js";
-import { useActiveDevice, useDevices, useSpotifyPlayer } from "../../composables/useSpotify.js";
+import { SpotifyWebAPI } from "~/composables/useSpotifyAPI.js";
+import { useActiveDevice, useDevices, useSpotifyPlayer } from "~/composables/useSpotify.js";
+import SpDeviceType from "~/model/SpotifyAPI/SpDeviceType.js";
+import { ref, watch } from "vue";
 
 const menu = ref(null);
 

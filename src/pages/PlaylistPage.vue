@@ -1,10 +1,10 @@
 <script setup>
 
-import { useRoute } from "vue-router";
+import { useDynamicComponent } from "~/composables/useDynamicComponent.js";
+import { usePlaylist } from "~/composables/useSpotify.js";
+import { usePrimaryColor } from "~/composables/usePrimaryColor.js";
 import { provide, ref, watch } from "vue";
-import { useDynamicComponent } from "../composables/useDynamicComponent.js";
-import { usePlaylist } from "../composables/useSpotify.js";
-import { usePrimaryColor } from "../composables/usePrimaryColor.js";
+import { useRoute } from "vue-router";
 
 const PlaylistView = useDynamicComponent({
   xs: 'view/xs/PlaylistView',

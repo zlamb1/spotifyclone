@@ -1,11 +1,9 @@
 <script setup>
 
-import {onMounted, onUnmounted, ref} from "vue";
-
-import SpTrack from "../model/SpotifyAPI/SpTrack.js";
-
 import IconBtn from "./btn/IconBtn.vue";
 import TrackThumbnail from "./thumbnail/TrackThumbnail.vue";
+import SpTrack from "~/model/SpotifyAPI/SpTrack.js";
+import { onMounted, onUnmounted, ref } from "vue";
 
 const props = defineProps({
   track: {

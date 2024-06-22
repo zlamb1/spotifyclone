@@ -1,8 +1,8 @@
 <script setup>
 
 import IconBtn from "../btn/IconBtn.vue";
-import {useRoute} from "vue-router";
-import {computed} from "vue";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 
 const props = defineProps({
   to: {

@@ -1,19 +1,16 @@
 <script setup>
 
-import {computed} from "vue";
-
-import {useQuasar} from "quasar";
-import {useActiveDevice, useSpotifyPlayer} from "../composables/useSpotify.js";
-
 import ProgressBar from "./ProgressBar.vue";
-
-import ChangeStrategy from "../model/ChangeStrategy.js";
 import IconBtn from "./btn/IconBtn.vue";
 import DeviceBtn from "./btn/DeviceBtn.vue";
 import VolumeControl from "./control/VolumeControl.vue";
 import RepeatControl from "./control/RepeatControl.vue";
 import TrackPreview from "./TrackPreview.vue";
 import ArtistContextMenu from "./menu/ArtistContextMenu.vue";
+import { useActiveDevice, useSpotifyPlayer } from "~/composables/useSpotify.js";
+import ChangeStrategy from "~/model/ChangeStrategy.js";
+import { useQuasar } from "quasar";
+import { computed } from "vue";
 
 const player = useSpotifyPlayer();
 const activeDevice = useActiveDevice();

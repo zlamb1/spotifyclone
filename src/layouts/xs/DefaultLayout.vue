@@ -1,11 +1,9 @@
 <script setup>
 
-import {computed, inject, provide, ref} from "vue";
-import {activeDevice, player} from "../../services/spotify_service.js";
-
-import { usePlayIcon } from "../../composables/usePlayIcon.js";
-
-import DeviceButton from "../../components/btn/xs/DeviceBtn.vue";
+import DeviceButton from "~/components/btn/xs/DeviceBtn.vue";
+import { usePlayIcon } from "~/composables/usePlayIcon.js";
+import { activeDevice, player } from "~/js/spotify_service.js";
+import { computed, inject, provide, ref } from "vue";
 
 const activePrimaryColor = inject('activePrimaryColor');
 
